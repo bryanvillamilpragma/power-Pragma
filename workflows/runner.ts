@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { createInterface } from "node:readline";
 import { resolve } from "node:path";
 import { bold, cyan, dim, green, red, yellow, log, write } from "../colors.js";
@@ -89,6 +90,71 @@ export function toPascalCase(str: string): string {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join("");
+}
+
+// ── Helper de imagen — drag & drop ───────────────────────────
+
+/**
+ * Pregunta al dev si tiene imagen de referencia.
+ * Soporta drag & drop — el dev arrastra el archivo al terminal
+ * y el OS convierte el drag en la ruta absoluta automáticamente.
+ * Retorna la ruta absoluta validada, o null si no hay imagen.
+ */
+export async function askImagePath(
+  rl: ReturnType<typeof createInterface>,
+  projectDir: string,
+): Promise<string | null> {
+  const hasImage = await askOption(rl, "¿Tienes imagen de referencia del diseño?", [
+    "sí — tengo un PNG, JPG o WebP",
+    "no — continuar sin imagen",
+  ]);
+
+  if (hasImage === 1) return null;
+
+  log("");
+  log(cyan("  ?") + " " + bold("Arrastra la imagen aquí o escribe la ruta:"));
+  log(dim("  Tip: arrastra el archivo PNG/JPG desde tu explorador al terminal y presiona Enter"));
+  log("");
+
+  const SUPPORTED = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"]);
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const raw = await new Promise<string>((res) => rl.question(dim("  › "), res));
+
+    // Limpiar la ruta — el drag & drop puede agregar comillas o espacios
+    // en algunos sistemas (macOS Terminal agrega comillas si hay espacios)
+    const cleaned = raw.trim().replace(/^['"]|['"]$/g, "");
+
+    if (!cleaned) {
+      write(red("  Ruta vacía. Intenta de nuevo.\n"));
+      continue;
+    }
+
+    // Resolver ruta relativa o absoluta
+    const absPath = cleaned.startsWith("/") || cleaned.match(/^[A-Za-z]:\\/)
+      ? cleaned
+      : resolve(projectDir, cleaned);
+
+    // Validar extensión
+    const ext = absPath.toLowerCase().slice(absPath.lastIndexOf("."));
+    if (!SUPPORTED.has(ext)) {
+      write(red(`  Formato no soportado: ${ext}. Usa PNG, JPG, JPEG, WebP o GIF.\n`));
+      continue;
+    }
+
+    // Validar que existe
+    if (!existsSync(absPath)) {
+      write(red(`  Archivo no encontrado: ${absPath}\n`));
+      if (attempt < 2) write(dim("  Intenta de nuevo o presiona Enter para continuar sin imagen.\n"));
+      continue;
+    }
+
+    log(green("  ✔") + dim(` imagen: ${cleaned}`));
+    return absPath;
+  }
+
+  log(yellow("  Continuando sin imagen de referencia."));
+  return null;
 }
 
 // ── Motor principal ───────────────────────────────────────────
