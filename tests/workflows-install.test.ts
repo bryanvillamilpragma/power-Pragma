@@ -7,22 +7,6 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe("workflow SKILL.md — frontmatter", () => {
-  it("create-component tiene type: workflow", () => {
-    const skillPath = join(
-      __dirname,
-      "..",
-      "skills-registry",
-      "workflows",
-      "create-component",
-      "SKILL.md",
-    );
-    ok(existsSync(skillPath), "SKILL.md debe existir");
-    const content = readFileSync(skillPath, "utf-8");
-    ok(content.includes("type: workflow"), "debe tener type: workflow");
-    ok(content.includes("name: create-component"), "debe tener name correcto");
-    ok(content.includes("description:"), "debe tener description");
-  });
-
   it("unit-test-review tiene type: workflow", () => {
     const skillPath = join(
       __dirname,
@@ -35,6 +19,54 @@ describe("workflow SKILL.md — frontmatter", () => {
     ok(existsSync(skillPath), "SKILL.md debe existir");
     const content = readFileSync(skillPath, "utf-8");
     ok(content.includes("type: workflow"), "debe tener type: workflow");
+    ok(content.includes("name: unit-test-review"), "debe tener name correcto");
+    ok(content.includes("description:"), "debe tener description");
+  });
+
+  it("create-view tiene type: agent y stacks definidos", () => {
+    const skillPath = join(
+      __dirname,
+      "..",
+      "skills-registry",
+      "workflows",
+      "create-view",
+      "SKILL.md",
+    );
+    ok(existsSync(skillPath), "SKILL.md debe existir");
+    const content = readFileSync(skillPath, "utf-8");
+    ok(content.includes("name: create-view"), "debe tener name correcto");
+    ok(content.includes("description:"), "debe tener description");
+    ok(content.includes("stacks:"), "debe tener stacks definidos");
+  });
+
+  it("code-reviewer tiene type: workflow", () => {
+    const skillPath = join(
+      __dirname,
+      "..",
+      "skills-registry",
+      "workflows",
+      "code-reviewer",
+      "SKILL.md",
+    );
+    ok(existsSync(skillPath), "SKILL.md debe existir");
+    const content = readFileSync(skillPath, "utf-8");
+    ok(content.includes("type: workflow"), "debe tener type: workflow");
+    ok(content.includes("name: code-reviewer"), "debe tener name correcto");
+  });
+
+  it("security-auditor tiene type: workflow", () => {
+    const skillPath = join(
+      __dirname,
+      "..",
+      "skills-registry",
+      "workflows",
+      "security-auditor",
+      "SKILL.md",
+    );
+    ok(existsSync(skillPath), "SKILL.md debe existir");
+    const content = readFileSync(skillPath, "utf-8");
+    ok(content.includes("type: workflow"), "debe tener type: workflow");
+    ok(content.includes("name: security-auditor"), "debe tener name correcto");
   });
 });
 

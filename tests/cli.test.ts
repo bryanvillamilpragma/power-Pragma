@@ -540,7 +540,7 @@ describe("CLI", () => {
       writePackageJson(tmp.path, { dependencies: { react: "^19" } });
       const output = run(["agents", "--dry-run"], tmp.path);
       ok(output.includes("Available agents"), "debe mostrar cabecera de agents");
-      ok(output.includes("create-component"), "debe listar create-component para React");
+      ok(output.includes("unit-test-review"), "debe listar unit-test-review para React");
     });
 
     it('"--agents" también activa la pantalla de agents', () => {

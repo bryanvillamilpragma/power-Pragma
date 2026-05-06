@@ -48,7 +48,6 @@ export const SKILLS_MAP: Technology[] = [
       "pragma/autoskills/vercel-react-best-practices",
     ],
     workflows: [
-      "pragma/autoskills/workflows/create-component",
       "pragma/autoskills/workflows/unit-test-review",
     ],
     autoRules: [
@@ -140,7 +139,6 @@ export const SKILLS_MAP: Technology[] = [
       "pragma/autoskills/clean-architecture-uml",
     ],
     workflows: [
-      "pragma/autoskills/workflows/create-component",
       "pragma/autoskills/workflows/unit-test-review",
     ],
     autoRules: [

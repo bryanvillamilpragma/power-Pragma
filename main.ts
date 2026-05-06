@@ -562,13 +562,6 @@ interface AgentEntry {
 // Keep in sync with skills-map.ts workflows/agents fields.
 const AGENTS_REGISTRY: AgentEntry[] = [
   {
-    name: "create-component",
-    description: "Crea un componente nuevo siguiendo las convenciones del proyecto",
-    requires: ["react", "angular"],
-    skillPath: "pragma/autoskills/workflows/create-component",
-    hint: "Componentes funcionales con hooks y RTL",
-  },
-  {
     name: "unit-test-review",
     description: "Revisa y genera unit tests siguiendo el patrón del proyecto",
     requires: ["react", "angular"],
@@ -581,6 +574,34 @@ const AGENTS_REGISTRY: AgentEntry[] = [
     requires: ["react", "angular", "nextjs"],
     skillPath: "pragma/autoskills/workflows/create-view",
     hint: "Vistas estructuradas con routing y estado",
+  },
+  {
+    name: "code-reviewer",
+    description: "Revisa código por anti-patrones, calidad arquitectural y principios SOLID",
+    requires: ["react", "angular", "nextjs"],
+    skillPath: "pragma/autoskills/workflows/code-reviewer",
+    hint: "Detecta anti-patrones, God components y code smells",
+  },
+  {
+    name: "dependency-scanner",
+    description: "Audita dependencias por CVEs, licencias y riesgos de supply chain",
+    requires: ["react", "angular", "nextjs", "node"],
+    skillPath: "pragma/autoskills/workflows/dependency-scanner",
+    hint: "CVEs, licencias y salud de dependencias",
+  },
+  {
+    name: "performance-optimizer",
+    description: "Optimiza Core Web Vitals, bundle size y rendimiento de renderizado",
+    requires: ["react", "angular", "nextjs"],
+    skillPath: "pragma/autoskills/workflows/performance-optimizer",
+    hint: "Core Web Vitals, bundle size y render performance",
+  },
+  {
+    name: "security-auditor",
+    description: "Detecta vulnerabilidades OWASP Top 10, XSS, tokens expuestos y secrets",
+    requires: ["react", "angular", "nextjs"],
+    skillPath: "pragma/autoskills/workflows/security-auditor",
+    hint: "OWASP Top 10, XSS, tokens y secrets en código",
   },
 ];
 
@@ -661,7 +682,7 @@ async function showAvailableAgents(
     for (const entry of entries) {
       const installedTag = entry.installed ? dim(" (installed)") : "";
       const techSuffix = entry.tech ? `  ${dim(`← ${entry.tech}`)}` : "";
-      log(`  ${green("›")} ${bold(entry.agent.name)}  ${dim(entry.agent.hint)}${installedTag}${techSuffix}`);
+      log(`  ${green("›")} ${bold(entry.agent.name)}  ${dim(entry.agent.description)}${installedTag}${techSuffix}`);
     }
     log();
     if (dryRun) {
@@ -675,7 +696,7 @@ async function showAvailableAgents(
   const selected = await multiSelect(entries, {
     labelFn: (entry) => {
       const installedTag = entry.installed ? dim(" (installed)") : "";
-      return `${cyan(bold(entry.agent.name))}  ${dim(entry.agent.hint)}${installedTag}`;
+      return `${cyan(bold(entry.agent.name))}  ${dim(entry.agent.description)}${installedTag}`;
     },
     hintFn: () => "",
     groupFn: (entry) => entry.tech,
