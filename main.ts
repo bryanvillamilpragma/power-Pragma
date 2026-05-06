@@ -667,22 +667,35 @@ async function showAvailableAgents(
     };
   });
 
-  const newCount = entries.filter((e) => !e.installed).length;
-  const installedCount = entries.length - newCount;
-  const countLabel =
-    installedCount > 0
-      ? `(${entries.length} found, ${installedCount} already installed)`
-      : `(${entries.length} found)`;
+  // Split and sort: missing first (pre-selected), installed last (pre-deselected)
+  const missingEntries = entries.filter((e) => !e.installed);
+  const installedEntries = entries.filter((e) => e.installed);
+  const sortedEntries = [...missingEntries, ...installedEntries];
 
-  log(cyan("  ◆ ") + bold("Available agents for your stack:") + "  " + dim(countLabel));
+  // ── Status summary ───────────────────────────────────────────
+  log(cyan("  ◆ ") + bold("Agents for your stack") + "  " + dim(`(${entries.length} found)`));
+  log();
+
+  if (installedEntries.length > 0) {
+    const names = installedEntries.map((e) => green(e.agent.name)).join(dim("  ·  "));
+    log(`  ${green("✔")} ${bold("Already installed")} ${dim(`(${installedEntries.length})`)}  ${names}`);
+  }
+
+  if (missingEntries.length > 0) {
+    log(`  ${yellow("◆")} ${bold("Missing")} ${dim(`(${missingEntries.length})`)}  ${dim("— pre-selected to install")}`);
+  } else {
+    log(`  ${green("✔")} ${dim("All agents are up to date.")}`);
+  }
   log();
 
   // Non-interactive or dry-run — print list and return
   if (dryRun || !process.stdin.isTTY) {
-    for (const entry of entries) {
-      const installedTag = entry.installed ? dim(" (installed)") : "";
+    for (const entry of sortedEntries) {
+      const statusTag = entry.installed
+        ? `  ${green("✔ installed")}`
+        : `  ${yellow("◆ missing")}`;
       const techSuffix = entry.tech ? `  ${dim(`← ${entry.tech}`)}` : "";
-      log(`  ${green("›")} ${bold(entry.agent.name)}  ${dim(entry.agent.description)}${installedTag}${techSuffix}`);
+      log(`  ${entry.installed ? dim("○") : green("●")} ${bold(entry.agent.name)}  ${dim(entry.agent.description)}${statusTag}${techSuffix}`);
     }
     log();
     if (dryRun) {
@@ -692,15 +705,23 @@ async function showAvailableAgents(
     return;
   }
 
-  // Interactive selection
-  const selected = await multiSelect(entries, {
+  // If everything is already installed, ask if user wants to re-install
+  if (missingEntries.length === 0) {
+    log(dim("  All agents already installed. Select any to re-install."));
+    log();
+  }
+
+  // Interactive selection — missing pre-selected, installed pre-deselected
+  const selected = await multiSelect(sortedEntries, {
     labelFn: (entry) => {
-      const installedTag = entry.installed ? dim(" (installed)") : "";
-      return `${cyan(bold(entry.agent.name))}  ${dim(entry.agent.description)}${installedTag}`;
+      if (entry.installed) {
+        return `${dim(entry.agent.name)}  ${dim(entry.agent.description)}  ${green("✔ installed")}`;
+      }
+      return `${cyan(bold(entry.agent.name))}  ${dim(entry.agent.description)}`;
     },
     hintFn: () => "",
     groupFn: (entry) => entry.tech,
-    initialSelected: entries.map((e) => !e.installed),
+    initialSelected: sortedEntries.map((e) => !e.installed),
   });
 
   if (selected.length === 0) {

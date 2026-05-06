@@ -539,7 +539,7 @@ describe("CLI", () => {
     it('"agents" muestra pantalla de agents para React', () => {
       writePackageJson(tmp.path, { dependencies: { react: "^19" } });
       const output = run(["agents", "--dry-run"], tmp.path);
-      ok(output.includes("Available agents"), "debe mostrar cabecera de agents");
+      ok(output.includes("Agents for your stack"), "debe mostrar cabecera de agents");
       ok(output.includes("unit-test-review"), "debe listar unit-test-review para React");
     });
 
@@ -547,7 +547,7 @@ describe("CLI", () => {
       writePackageJson(tmp.path, { dependencies: { react: "^19" } });
       const output = run(["--agents", "--dry-run"], tmp.path);
       ok(!output.includes("Skills to install"), "no debe mostrar pantalla de skills");
-      ok(output.includes("Available agents"), "debe mostrar cabecera de agents");
+      ok(output.includes("Agents for your stack"), "debe mostrar cabecera de agents");
     });
 
     it('"agents" sin stack compatible muestra mensaje de no hay agents', () => {
