@@ -718,9 +718,15 @@ export function collectWorkflows(params: {
 
 export function collectAutoRules(params: {
   detected: Technology[];
-  installedNames?: Set<string> | null;
+  installedNames?: Set<string> | string[] | null;
 }): SkillEntry[] {
   const { detected, installedNames = null } = params;
+  const installedSet =
+    installedNames instanceof Set
+      ? installedNames
+      : installedNames
+      ? new Set(installedNames)
+      : null;
   const seen = new Set<string>();
   const result: SkillEntry[] = [];
 
@@ -729,7 +735,7 @@ export function collectAutoRules(params: {
     for (const rulePath of tech.autoRules) {
       const { skillName } = parseSkillPath(rulePath);
       if (seen.has(skillName)) continue;
-      if (installedNames?.has(skillName)) continue;
+      if (installedSet?.has(skillName)) continue;
       seen.add(skillName);
       result.push({
         skill: rulePath,

@@ -7,37 +7,37 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe("rules registry — archivos existen", () => {
-  const rulesDir = join(__dirname, "..", "..", "skills-registry", "rules");
+  const rulesDir = join(__dirname, "..", "skills-registry", "rules");
 
   const expectedRules = [
-    "code-test.md",
-    "solid-clean.md",
-    "performance.md",
-    "clean-architecture.md",
-    "security.md",
+    "code-test",
+    "solid-clean",
+    "performance",
+    "clean-architecture",
+    "security",
   ];
 
   for (const rule of expectedRules) {
-    it(`existe ${rule}`, () => {
-      ok(existsSync(join(rulesDir, rule)), `falta: skills-registry/rules/${rule}`);
+    it(`existe ${rule}/SKILL.md`, () => {
+      ok(existsSync(join(rulesDir, rule, "SKILL.md")), `falta: skills-registry/rules/${rule}/SKILL.md`);
     });
   }
 });
 
 describe("rules registry — frontmatter correcto", () => {
-  const rulesDir = join(__dirname, "..", "..", "skills-registry", "rules");
+  const rulesDir = join(__dirname, "..", "skills-registry", "rules");
 
   it("todos tienen trigger: always_on", () => {
-    const files = [
-      "code-test.md",
-      "solid-clean.md",
-      "performance.md",
-      "clean-architecture.md",
-      "security.md",
+    const rules = [
+      "code-test",
+      "solid-clean",
+      "performance",
+      "clean-architecture",
+      "security",
     ];
-    for (const file of files) {
-      const content = readFileSync(join(rulesDir, file), "utf-8");
-      ok(content.includes("trigger: always_on"), `${file} falta trigger: always_on`);
+    for (const rule of rules) {
+      const content = readFileSync(join(rulesDir, rule, "SKILL.md"), "utf-8");
+      ok(content.includes("trigger: always_on"), `${rule}/SKILL.md falta trigger: always_on`);
     }
   });
 });

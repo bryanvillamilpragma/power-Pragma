@@ -11,7 +11,6 @@ describe("workflow SKILL.md — frontmatter", () => {
     const skillPath = join(
       __dirname,
       "..",
-      "..",
       "skills-registry",
       "create-component",
       "SKILL.md",
@@ -26,7 +25,6 @@ describe("workflow SKILL.md — frontmatter", () => {
   it("unit-test-review tiene type: workflow", () => {
     const skillPath = join(
       __dirname,
-      "..",
       "..",
       "skills-registry",
       "unit-test-review",

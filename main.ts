@@ -29,7 +29,7 @@ import {
     securityCheckForSkillPath,
 } from "./installer.js";
 import type { ComboSkill, SkillEntry, Technology } from "./lib.js";
-import { collectAgents, collectAutoRules, collectSkills, detectInstalledIDEs, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
+import { collectAgents, collectAutoRules, collectSkills, detectAgents, detectInstalledIDEs, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
 import { formatTime, multiSelect, printBanner } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -627,6 +627,9 @@ async function main(): Promise<void> {
 
   if (dryRun) {
     printSkillsList(skills);
+    const agentList = agents.length > 0 ? agents : detectAgents();
+    log(dim(`   Agents: ${agentList.join(", ")}`));
+    log();
     log(dim("   --dry-run: nothing was installed."));
     log();
     process.exit(0);
