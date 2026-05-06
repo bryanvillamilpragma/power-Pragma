@@ -48,8 +48,8 @@ export const SKILLS_MAP: Technology[] = [
       "pragma/autoskills/vercel-react-best-practices",
     ],
     workflows: [
-      "pragma/autoskills/create-component",
-      "pragma/autoskills/unit-test-review",
+      "pragma/autoskills/workflows/create-component",
+      "pragma/autoskills/workflows/unit-test-review",
     ],
     autoRules: [
       "pragma/autoskills/rules/solid-clean",
@@ -58,7 +58,7 @@ export const SKILLS_MAP: Technology[] = [
       "pragma/autoskills/rules/security",
     ],
     agents: [
-      "pragma/autoskills/agents/create-view",
+      "pragma/autoskills/workflows/create-view",
     ],
   },
   {
@@ -79,7 +79,7 @@ export const SKILLS_MAP: Technology[] = [
       "pragma/autoskills/rules/security",
     ],
     agents: [
-      "pragma/autoskills/agents/create-view",
+      "pragma/autoskills/workflows/create-view",
     ],
   },
   {
@@ -140,8 +140,8 @@ export const SKILLS_MAP: Technology[] = [
       "pragma/autoskills/clean-architecture-uml",
     ],
     workflows: [
-      "pragma/autoskills/create-component",
-      "pragma/autoskills/unit-test-review",
+      "pragma/autoskills/workflows/create-component",
+      "pragma/autoskills/workflows/unit-test-review",
     ],
     autoRules: [
       "pragma/autoskills/rules/clean-architecture",
@@ -150,7 +150,7 @@ export const SKILLS_MAP: Technology[] = [
       "pragma/autoskills/rules/security",
     ],
     agents: [
-      "pragma/autoskills/agents/create-view",
+      "pragma/autoskills/workflows/create-view",
     ],
   },
   {

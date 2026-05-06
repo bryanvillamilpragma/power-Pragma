@@ -12,6 +12,7 @@ describe("workflow SKILL.md — frontmatter", () => {
       __dirname,
       "..",
       "skills-registry",
+      "workflows",
       "create-component",
       "SKILL.md",
     );
@@ -27,6 +28,7 @@ describe("workflow SKILL.md — frontmatter", () => {
       __dirname,
       "..",
       "skills-registry",
+      "workflows",
       "unit-test-review",
       "SKILL.md",
     );
