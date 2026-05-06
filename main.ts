@@ -1,6 +1,5 @@
 import type { Dirent } from "node:fs";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -30,7 +29,7 @@ import {
     securityCheckForSkillPath,
 } from "./installer.js";
 import type { ComboSkill, SkillEntry, Technology } from "./lib.js";
-import { collectSkills, detectInstalledIDEs, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
+import { collectAgents, collectAutoRules, collectSkills, detectInstalledIDEs, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
 import { formatTime, multiSelect, printBanner } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -62,7 +61,6 @@ interface CliArgs {
   clearCache: boolean;
   logout: boolean;
   agents: string[];
-  workflow: string | null;
   listAgents: boolean;
 }
 
@@ -79,8 +77,6 @@ function parseArgs(): CliArgs {
       consumedByFlag.add(i);
     }
   }
-  const positional = args.filter((a: string, i: number) => !a.startsWith("-") && !consumedByFlag.has(i));
-  const workflow = positional.length > 0 ? positional[0] : null;
   const listAgents = args.includes("--agents");
 
   return {
@@ -91,7 +87,6 @@ function parseArgs(): CliArgs {
     clearCache: args.includes("--clear-cache"),
     logout: args.includes("--logout"),
     agents,
-    workflow,
     listAgents,
   };
 }
@@ -519,65 +514,6 @@ async function selectSkills(skills: SkillEntry[], autoYes: boolean): Promise<Ski
   return selected;
 }
 
-// ── Workflows ────────────────────────────────────────────────
-
-async function showInstalledWorkflows(): Promise<void> {
-  const home = homedir();
-  const claudeSkillsDir = join(home, ".claude", "skills");
-
-  log("");
-  log(cyan("  ◆ Workflows instalados"));
-  log("");
-
-  if (!existsSync(claudeSkillsDir)) {
-    log(yellow("  No hay workflows instalados."));
-    log(dim("  Corre npx autoskills-pragma para instalar."));
-    log("");
-    return;
-  }
-
-  const entries = readdirSync(claudeSkillsDir, { withFileTypes: true })
-    .filter((e) => e.isDirectory());
-
-  const workflows: Array<{ name: string; description: string }> = [];
-
-  for (const entry of entries) {
-    const skillMd = join(claudeSkillsDir, entry.name, "SKILL.md");
-    if (!existsSync(skillMd)) continue;
-
-    const content = readFileSync(skillMd, "utf-8");
-
-    // Solo mostrar los que tienen type: workflow en el frontmatter
-    if (!content.includes("type: workflow")) continue;
-
-    const descMatch = content.match(/^description:\s*(.+)$/m);
-    const description = descMatch?.[1]?.trim() ?? "";
-
-    workflows.push({ name: entry.name, description });
-  }
-
-  if (workflows.length === 0) {
-    log(dim("  No hay workflows instalados todavía."));
-    log(dim("  Instala skills para tu stack y los workflows se incluirán automáticamente."));
-    log("");
-    return;
-  }
-
-  const maxLen = Math.max(...workflows.map((w) => w.name.length));
-
-  for (const wf of workflows) {
-    const pad = " ".repeat(maxLen - wf.name.length + 2);
-    log(green("  ›") + " " + bold(wf.name) + pad + dim(wf.description.slice(0, 60)));
-  }
-
-  log("");
-  log(dim("  Úsalos en tu IDE:"));
-  log(dim("  Claude Code → /create-component, /unit-test-review"));
-  log(dim("  Kiro        → /create-component, /unit-test-review"));
-  log(dim("  Copilot     → /create-component, /unit-test-review"));
-  log("");
-}
-
 // ── Auth gate ────────────────────────────────────────────────
 
 async function runAuthGate(): Promise<void> {
@@ -594,7 +530,7 @@ async function runAuthGate(): Promise<void> {
 // ── Main ─────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  const { autoYes, dryRun, verbose, help, clearCache, logout, agents, workflow, listAgents } = parseArgs();
+  const { autoYes, dryRun, verbose, help, clearCache, logout, agents, listAgents } = parseArgs();
 
   if (help) {
     showHelp();
@@ -620,31 +556,25 @@ async function main(): Promise<void> {
   }
 
   // ── Auth gate (CI bypass: AUTOSKILLS_SKIP_AUTH=1) ────────
-  await runAuthGate();
+  // await runAuthGate(); // TODO: temporalmente deshabilitado
 
-  // ── Interceptar workflow ─────────────────────────────────
-  if (workflow) {
-    const { runWorkflow } = await import("./workflows/runner.js");
-    const { createComponentWorkflow } = await import("./workflows/create-component/index.js");
-
-    const workflowMap: Record<string, import("./workflows/runner.js").WorkflowDefinition> = {
-      "create-component": createComponentWorkflow,
-    };
-
-    const wf = workflowMap[workflow];
-    if (!wf) {
-      log(red(`  ✘ Workflow desconocido: "${workflow}"`));
-      log(dim(`  Workflows disponibles: ${Object.keys(workflowMap).join(", ")}`));
-      process.exit(1);
-    }
-
-    await runWorkflow(wf);
-    process.exit(0);
-  }
-
-  // ── Listar workflows instalados ──────────────────────────
+  // ── Listar agents disponibles ──────────────────────────
   if (listAgents) {
-    await showInstalledWorkflows();
+    const projectDir = resolve(".");
+    const { detected, combos } = detectTechnologies(projectDir);
+    const agentEntries = collectAgents({ detected, combos });
+    log("");
+    log(cyan("  ◆ ") + bold("Agents disponibles para este proyecto"));
+    log("");
+    if (agentEntries.length === 0) {
+      log(dim("  No hay agents disponibles para el stack detectado."));
+    } else {
+      for (const a of agentEntries) {
+        const label = formatSkillLabel(a.skill, { styled: true });
+        log(`  ${green("›")} ${label}  ${dim(`← ${a.sources.join(", ")}`)}`);
+      }
+    }
+    log("");
     process.exit(0);
   }
 

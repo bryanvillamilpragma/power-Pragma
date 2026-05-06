@@ -718,11 +718,9 @@ export function collectWorkflows(params: {
 
 export function collectAutoRules(params: {
   detected: Technology[];
-  installedNames: string[] | Set<string>;
+  installedNames?: Set<string> | null;
 }): SkillEntry[] {
-  const { detected, installedNames } = params;
-  const installedSet =
-    installedNames instanceof Set ? installedNames : new Set(installedNames);
+  const { detected, installedNames = null } = params;
   const seen = new Set<string>();
   const result: SkillEntry[] = [];
 
@@ -730,10 +728,36 @@ export function collectAutoRules(params: {
     if (!tech.autoRules) continue;
     for (const rulePath of tech.autoRules) {
       const { skillName } = parseSkillPath(rulePath);
-      if (seen.has(skillName) || installedSet.has(skillName)) continue;
+      if (seen.has(skillName)) continue;
+      if (installedNames?.has(skillName)) continue;
       seen.add(skillName);
       result.push({
         skill: rulePath,
+        sources: [tech.name],
+        installed: false,
+      });
+    }
+  }
+
+  return result;
+}
+
+export function collectAgents(params: {
+  detected: Technology[];
+  combos?: ComboSkill[];
+}): SkillEntry[] {
+  const { detected, combos = [] } = params;
+  const seen = new Set<string>();
+  const result: SkillEntry[] = [];
+
+  for (const tech of detected) {
+    if (!tech.agents) continue;
+    for (const agentPath of tech.agents) {
+      const { skillName } = parseSkillPath(agentPath);
+      if (seen.has(skillName)) continue;
+      seen.add(skillName);
+      result.push({
+        skill: agentPath,
         sources: [tech.name],
         installed: false,
       });

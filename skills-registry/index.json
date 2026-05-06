@@ -13352,7 +13352,7 @@
       "type": "rule",
       "commitSha": "local",
       "files": [
-        "code-test.md"
+        "SKILL.md"
       ],
       "sha256": {},
       "bundleHash": "",
@@ -13370,7 +13370,7 @@
       "type": "rule",
       "commitSha": "local",
       "files": [
-        "solid-clean.md"
+        "SKILL.md"
       ],
       "sha256": {},
       "bundleHash": "",
@@ -13388,7 +13388,7 @@
       "type": "rule",
       "commitSha": "local",
       "files": [
-        "performance.md"
+        "SKILL.md"
       ],
       "sha256": {},
       "bundleHash": "",
@@ -13406,7 +13406,7 @@
       "type": "rule",
       "commitSha": "local",
       "files": [
-        "clean-architecture.md"
+        "SKILL.md"
       ],
       "sha256": {},
       "bundleHash": "",
@@ -13424,7 +13424,7 @@
       "type": "rule",
       "commitSha": "local",
       "files": [
-        "security.md"
+        "SKILL.md"
       ],
       "sha256": {},
       "bundleHash": "",
@@ -13442,7 +13442,7 @@
       "type": "agent",
       "commitSha": "local",
       "files": [
-        "AGENT.md"
+        "SKILL.md"
       ],
       "sha256": {},
       "bundleHash": "",
