@@ -28,7 +28,7 @@ import {
     securityCheckForSkillPath,
 } from "./installer.js";
 import type { ComboSkill, SkillEntry, Technology } from "./lib.js";
-import { collectSkills, detectInstalledIDEs, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
+import { collectAutoRules, collectSkills, detectInstalledIDEs, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
 import { formatTime, multiSelect, printBanner } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -59,7 +59,6 @@ interface CliArgs {
   help: boolean;
   clearCache: boolean;
   agents: string[];
-  workflow: string | null;
   listAgents: boolean;
 }
 
@@ -73,8 +72,6 @@ function parseArgs(): CliArgs {
       agents.push(args[i]);
     }
   }
-  const positional = args.filter((a) => !a.startsWith("-"));
-  const workflow = positional.length > 0 ? positional[0] : null;
   const listAgents = args.includes("--agents");
 
   return {
@@ -84,7 +81,6 @@ function parseArgs(): CliArgs {
     help: args.includes("--help") || args.includes("-h"),
     clearCache: args.includes("--clear-cache"),
     agents,
-    workflow,
     listAgents,
   };
 }
@@ -569,7 +565,7 @@ async function showInstalledWorkflows(): Promise<void> {
 // ── Main ─────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  const { autoYes, dryRun, verbose, help, clearCache, agents, workflow, listAgents } = parseArgs();
+  const { autoYes, dryRun, verbose, help, clearCache, agents, listAgents } = parseArgs();
 
   if (help) {
     showHelp();
@@ -587,27 +583,7 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  // ── Interceptar workflow ─────────────────────────────────
-  if (workflow) {
-    const { runWorkflow } = await import("./workflows/runner.js");
-    const { createComponentWorkflow } = await import("./workflows/create-component/index.js");
-
-    const workflowMap: Record<string, import("./workflows/runner.js").WorkflowDefinition> = {
-      "create-component": createComponentWorkflow,
-    };
-
-    const wf = workflowMap[workflow];
-    if (!wf) {
-      log(red(`  ✘ Workflow desconocido: "${workflow}"`));
-      log(dim(`  Workflows disponibles: ${Object.keys(workflowMap).join(", ")}`));
-      process.exit(1);
-    }
-
-    await runWorkflow(wf);
-    process.exit(0);
-  }
-
-  // ── Listar workflows instalados ──────────────────────────
+  // ── Listar agents instalados ─────────────────────────────
   if (listAgents) {
     await showInstalledWorkflows();
     process.exit(0);
@@ -728,6 +704,28 @@ async function main(): Promise<void> {
         log(red("   ✘") + dim(` ${result.skillName} → ${fail.ide}: ${fail.error}`));
       }
     }
+  }
+
+  // Instalar rules automáticas sin mostrar selector
+  const autoRules = collectAutoRules({
+    detected,
+    installedNames: selectedSkills.map((s) => parseSkillPath(s.skill).skillName),
+  });
+
+  if (autoRules.length > 0) {
+    log(dim(`  Instalando ${autoRules.length} rule${autoRules.length !== 1 ? "s" : ""} automática${autoRules.length !== 1 ? "s" : ""}...`));
+    for (const rule of autoRules) {
+      const result = await installSkillGlobal(
+        rule.skill,
+        selectedGlobal,
+        selectedLocal,
+        { projectDir, verbose },
+        "rule",
+      );
+      totalInstalled += result.installed.length;
+      totalFailed += result.failed.length;
+    }
+    log(dim(`  ✔ Rules automáticas instaladas.`));
   }
 
   const elapsed = Date.now() - startTime;

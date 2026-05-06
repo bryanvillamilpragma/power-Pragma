@@ -13007,7 +13007,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13029,7 +13029,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13049,7 +13049,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13069,7 +13069,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13089,7 +13089,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13109,7 +13109,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13129,7 +13129,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13157,7 +13157,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13177,7 +13177,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13277,7 +13277,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13301,7 +13301,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13321,7 +13321,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13357,7 +13357,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13497,7 +13497,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13517,7 +13517,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill — no remote review required.",
+        "summary": "Local skill \u2014 no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -13560,6 +13560,114 @@
         "status": "approved",
         "flags": [],
         "summary": "Workflow para revisar y completar tests unitarios Angular y React.",
+        "model": "local",
+        "promptVersion": "1.0.0",
+        "reviewedAt": "2026-05-06T00:00:00.000Z"
+      }
+    },
+    "rules/code-test": {
+      "source": "pragma/autoskills/rules/code-test",
+      "type": "rule",
+      "commitSha": "local",
+      "files": [
+        "code-test.md"
+      ],
+      "sha256": {},
+      "bundleHash": "",
+      "review": {
+        "status": "approved",
+        "flags": [],
+        "summary": "Reglas para pruebas unitarias frontend con Jest, Vitest y Karma",
+        "model": "local",
+        "promptVersion": "1.0.0",
+        "reviewedAt": "2026-05-06T00:00:00.000Z"
+      }
+    },
+    "rules/solid-clean": {
+      "source": "pragma/autoskills/rules/solid-clean",
+      "type": "rule",
+      "commitSha": "local",
+      "files": [
+        "solid-clean.md"
+      ],
+      "sha256": {},
+      "bundleHash": "",
+      "review": {
+        "status": "approved",
+        "flags": [],
+        "summary": "Reglas SOLID y Clean Code para generaci\u00f3n de c\u00f3digo",
+        "model": "local",
+        "promptVersion": "1.0.0",
+        "reviewedAt": "2026-05-06T00:00:00.000Z"
+      }
+    },
+    "rules/performance": {
+      "source": "pragma/autoskills/rules/performance",
+      "type": "rule",
+      "commitSha": "local",
+      "files": [
+        "performance.md"
+      ],
+      "sha256": {},
+      "bundleHash": "",
+      "review": {
+        "status": "approved",
+        "flags": [],
+        "summary": "Reglas de performance frontend: Core Web Vitals, bundle size, rendering",
+        "model": "local",
+        "promptVersion": "1.0.0",
+        "reviewedAt": "2026-05-06T00:00:00.000Z"
+      }
+    },
+    "rules/clean-architecture": {
+      "source": "pragma/autoskills/rules/clean-architecture",
+      "type": "rule",
+      "commitSha": "local",
+      "files": [
+        "clean-architecture.md"
+      ],
+      "sha256": {},
+      "bundleHash": "",
+      "review": {
+        "status": "approved",
+        "flags": [],
+        "summary": "Reglas para desarrollo con Clean Architecture",
+        "model": "local",
+        "promptVersion": "1.0.0",
+        "reviewedAt": "2026-05-06T00:00:00.000Z"
+      }
+    },
+    "rules/security": {
+      "source": "pragma/autoskills/rules/security",
+      "type": "rule",
+      "commitSha": "local",
+      "files": [
+        "security.md"
+      ],
+      "sha256": {},
+      "bundleHash": "",
+      "review": {
+        "status": "approved",
+        "flags": [],
+        "summary": "Reglas de seguridad frontend: XSS, tokens, headers, dependencias",
+        "model": "local",
+        "promptVersion": "1.0.0",
+        "reviewedAt": "2026-05-06T00:00:00.000Z"
+      }
+    },
+    "agents/create-view": {
+      "source": "pragma/autoskills/agents/create-view",
+      "type": "agent",
+      "commitSha": "local",
+      "files": [
+        "AGENT.md"
+      ],
+      "sha256": {},
+      "bundleHash": "",
+      "review": {
+        "status": "approved",
+        "flags": [],
+        "summary": "Agent para crear componentes y vistas completas siguiendo las convenciones del proyecto",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-06T00:00:00.000Z"
