@@ -24,12 +24,12 @@ import type { InstallSecurityCheck } from "./installer.js";
 import {
     clearAutoskillsCache,
     getRegistryDir,
-    installAll,
+    installSkillGlobal,
     loadRegistry,
     securityCheckForSkillPath,
 } from "./installer.js";
 import type { ComboSkill, SkillEntry, Technology } from "./lib.js";
-import { collectSkills, detectAgents, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
+import { collectAgents, collectAutoRules, collectSkills, detectAgents, detectInstalledIDEs, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
 import { formatTime, multiSelect, printBanner } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -61,7 +61,6 @@ interface CliArgs {
   clearCache: boolean;
   logout: boolean;
   agents: string[];
-  workflow: string | null;
   listAgents: boolean;
 }
 
@@ -78,8 +77,6 @@ function parseArgs(): CliArgs {
       consumedByFlag.add(i);
     }
   }
-  const positional = args.filter((a: string, i: number) => !a.startsWith("-") && !consumedByFlag.has(i));
-  const workflow = positional.length > 0 ? positional[0] : null;
   const listAgents = args.includes("--agents");
 
   return {
@@ -90,7 +87,6 @@ function parseArgs(): CliArgs {
     clearCache: args.includes("--clear-cache"),
     logout: args.includes("--logout"),
     agents,
-    workflow,
     listAgents,
   };
 }
@@ -518,44 +514,6 @@ async function selectSkills(skills: SkillEntry[], autoYes: boolean): Promise<Ski
   return selected;
 }
 
-// ── Workflows ────────────────────────────────────────────────
-
-async function showAvailableAgents(): Promise<void> {
-  const projectDir = resolve(".");
-  const { detected } = detectTechnologies(projectDir);
-  const detectedIds = detected.map((t: Technology) => t.id);
-
-  const allWorkflows = [
-    {
-      name: "create-component",
-      description: "Crea un componente siguiendo las convenciones del stack",
-      requires: [["angular", "clean-architecture-uml"], ["angular"], ["react"]],
-    },
-  ];
-
-  const available = allWorkflows.filter((wf) =>
-    wf.requires.some((req) => req.every((r) => detectedIds.includes(r))),
-  );
-
-  log("");
-  log(cyan("  ◆ Agentes disponibles para este proyecto"));
-  log(dim(`  Stack: ${detectedIds.join(", ") || "no detectado"}`));
-  log("");
-
-  if (available.length === 0) {
-    log(yellow("  No hay agentes disponibles para el stack detectado."));
-  } else {
-    const maxLen = Math.max(...available.map((a) => a.name.length));
-    for (const wf of available) {
-      const pad = " ".repeat(maxLen - wf.name.length + 2);
-      log(green("  ›") + " " + bold(wf.name) + pad + dim(wf.description));
-    }
-    log("");
-    log(dim("  Usar: npx autoskills-pragma <nombre-agente>"));
-  }
-  log("");
-}
-
 // ── Auth gate ────────────────────────────────────────────────
 
 async function runAuthGate(): Promise<void> {
@@ -572,7 +530,7 @@ async function runAuthGate(): Promise<void> {
 // ── Main ─────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  const { autoYes, dryRun, verbose, help, clearCache, logout, agents, workflow, listAgents } = parseArgs();
+  const { autoYes, dryRun, verbose, help, clearCache, logout, agents, listAgents } = parseArgs();
 
   if (help) {
     showHelp();
@@ -598,31 +556,25 @@ async function main(): Promise<void> {
   }
 
   // ── Auth gate (CI bypass: AUTOSKILLS_SKIP_AUTH=1) ────────
-  await runAuthGate();
+  // await runAuthGate(); // TODO: temporalmente deshabilitado
 
-  // ── Interceptar workflow ─────────────────────────────────
-  if (workflow) {
-    const { runWorkflow } = await import("./workflows/runner.js");
-    const { createComponentWorkflow } = await import("./workflows/create-component/index.js");
-
-    const workflowMap: Record<string, import("./workflows/runner.js").WorkflowDefinition> = {
-      "create-component": createComponentWorkflow,
-    };
-
-    const wf = workflowMap[workflow];
-    if (!wf) {
-      log(red(`  ✘ Workflow desconocido: "${workflow}"`));
-      log(dim(`  Workflows disponibles: ${Object.keys(workflowMap).join(", ")}`));
-      process.exit(1);
-    }
-
-    await runWorkflow(wf);
-    process.exit(0);
-  }
-
-  // ── Listar agentes disponibles ───────────────────────────
+  // ── Listar agents disponibles ──────────────────────────
   if (listAgents) {
-    await showAvailableAgents();
+    const projectDir = resolve(".");
+    const { detected, combos } = detectTechnologies(projectDir);
+    const agentEntries = collectAgents({ detected, combos });
+    log("");
+    log(cyan("  ◆ ") + bold("Agents disponibles para este proyecto"));
+    log("");
+    if (agentEntries.length === 0) {
+      log(dim("  No hay agents disponibles para el stack detectado."));
+    } else {
+      for (const a of agentEntries) {
+        const label = formatSkillLabel(a.skill, { styled: true });
+        log(`  ${green("›")} ${label}  ${dim(`← ${a.sources.join(", ")}`)}`);
+      }
+    }
+    log("");
     process.exit(0);
   }
 
@@ -662,8 +614,6 @@ async function main(): Promise<void> {
         return validSkills.filter((s) => localSkillDirs.has(parseSkillPath(s.skill).skillName));
       })();
 
-  const resolvedAgents = agents.length > 0 ? agents : detectAgents();
-
   if (skills.length === 0) {
     log(yellow("   No skills available for your stack yet."));
     log(dim("   Check https://autoskills.sh for the latest."));
@@ -677,7 +627,9 @@ async function main(): Promise<void> {
 
   if (dryRun) {
     printSkillsList(skills);
-    log(dim(`   Agents: ${resolvedAgents.join(", ")}`));
+    const agentList = agents.length > 0 ? agents : detectAgents();
+    log(dim(`   Agents: ${agentList.join(", ")}`));
+    log();
     log(dim("   --dry-run: nothing was installed."));
     log();
     process.exit(0);
@@ -687,39 +639,76 @@ async function main(): Promise<void> {
 
   log();
 
-  log(cyan("   ◆ ") + bold("Installing skills..."));
-  log(dim(`   Agents: ${resolvedAgents.join(", ")}`));
-  log();
+  const { global: globalIDEs, local: localIDEs } = detectInstalledIDEs(projectDir);
+  const allIDEsDetected = [...globalIDEs, ...localIDEs];
 
-  const startTime = Date.now();
-  const { installed, failed, errors, securityChecks } = await installAll(
-    selectedSkills,
-    resolvedAgents,
-    {
-      verbose,
-    },
-  );
-  const elapsed = Date.now() - startTime;
-  const claudeCleanup = cleanupClaudeMd(projectDir);
-
-  if (process.stdout.isTTY && !verbose) {
-    const up = selectedSkills.length + 2;
-    write(`\x1b[${up}A\r\x1b[K`);
-    log(green("   ◆ ") + bold("Done!"));
-    write(`\x1b[${selectedSkills.length + 1}B`);
+  if (allIDEsDetected.length === 0) {
+    log(yellow("  ⚠ No se detectó ningún IDE de IA instalado."));
+    log(dim("  Instala Claude Code, Cursor, Kiro, Windsurf o VS Code con Copilot."));
+    log();
+    process.exit(0);
   }
 
-  if (claudeCleanup.cleaned) {
-    if (claudeCleanup.deleted) {
-      log(dim("   Removed autoskills section from CLAUDE.md (file was empty, deleted)."));
-    } else {
-      log(dim("   Removed autoskills section from CLAUDE.md."));
-    }
+  let selectedIDEs: typeof allIDEsDetected;
+
+  if (allIDEsDetected.length === 1) {
+    selectedIDEs = allIDEsDetected;
+    log(cyan("  ◆ IDE detectado:") + " " + bold(allIDEsDetected[0].id));
+    log();
+  } else {
+    log(cyan("  ◆ IDEs detectados en tu sistema:"));
+    log();
+
+    selectedIDEs = await multiSelect(allIDEsDetected, {
+      labelFn: (ide) => `${ide.id}${ide.config.isGlobal ? "" : " (local — sin soporte global)"}`,
+      initialSelected: allIDEsDetected.map(() => autoYes),
+    });
     log();
   }
 
-  printSecurityChecks(securityChecks);
-  printSummary({ installed, failed, errors, elapsed, verbose });
+  const selectedGlobal = selectedIDEs.filter((ide) => ide.config.isGlobal);
+  const selectedLocal = selectedIDEs.filter((ide) => !ide.config.isGlobal);
+
+  log(cyan("  ◆ ") + bold("Instalando skills globalmente..."));
+  log(dim(`  IDEs: ${selectedIDEs.map((i) => i.id).join(", ")}`));
+  if (selectedLocal.length > 0) {
+    log(dim(`  Cursor instalará en este proyecto: ${projectDir}`));
+  }
+  log();
+
+  const startTime = Date.now();
+  let totalInstalled = 0;
+  let totalFailed = 0;
+
+  for (const skill of selectedSkills) {
+    const result = await installSkillGlobal(
+      skill.skill,
+      selectedGlobal,
+      selectedLocal,
+      { projectDir, verbose },
+    );
+    totalInstalled += result.installed.length;
+    totalFailed += result.failed.length;
+
+    if (verbose) {
+      for (const inst of result.installed) {
+        log(green("   ✔") + dim(` ${result.skillName} → ${inst.ide}`));
+      }
+      for (const fail of result.failed) {
+        log(red("   ✘") + dim(` ${result.skillName} → ${fail.ide}: ${fail.error}`));
+      }
+    }
+  }
+
+  const elapsed = Date.now() - startTime;
+  log(green("  ✔ ") + bold(`${totalInstalled} instalaciones completadas`) + dim(` en ${formatTime(elapsed)}`));
+  if (totalFailed > 0) {
+    log(yellow(`  ⚠ ${totalFailed} fallaron`));
+  }
+  log();
+  log(dim("  Tus IDEs ya tienen el contexto del proyecto."));
+  log(dim("  Abre cualquier proyecto y tu agente estará listo."));
+  log();
 }
 
 main().catch((err: Error) => {
