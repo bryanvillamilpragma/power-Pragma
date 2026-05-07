@@ -181,6 +181,37 @@ When multiple technologies are used together, `autoskills-pragma` detects **tech
 
 The detection runs entirely locally with zero network requests until installation begins.
 
+## Skills Registry
+
+The `skills-registry/` directory is a local, verified registry of all installable content. It contains:
+
+- **`index.json`** — Manifest with SHA-256 hashes, review status, and metadata for every skill.
+- **Skill folders** — Each contains at least a `SKILL.md` and optionally `references/` or other supporting files.
+
+### Two types of skills
+
+| Type | Source | `commitSha` | How to update |
+|------|--------|-------------|---------------|
+| **Upstream** | Downloaded from GitHub repos (e.g. `vercel-labs/next-skills`) | Git SHA | `pnpm sync:skills` |
+| **Pragma local** | Created manually in this repo | `"local"` | Edit files directly, then regenerate hashes |
+
+### Pragma-specific content
+
+This fork adds curated skills, rules, workflows, and agents maintained by Pragma Engineering:
+
+- `skills-registry/rules/` — Auto-injected coding rules (SOLID, security, testing, performance)
+- `skills-registry/workflows/` — Multi-step workflow agents (code-reviewer, unit-test-review, etc.)
+- Skills like `angular-security`, `clean-architecture-uml`, `typescript-best-practices`, `frontend-performance`, etc.
+
+All Pragma content is declared in `skills-map.ts` under the `skills`, `workflows`, `autoRules`, or `agents` fields of each technology.
+
+### Maintainer commands
+
+```bash
+pnpm sync:skills          # Download & audit upstream skills (requires GITHUB_TOKEN + OPENAI_API_KEY)
+pnpm validate:registry    # Verify skills-map ↔ registry consistency (runs on prepublishOnly)
+```
+
 ## Requirements
 
 - Node.js >= 22.6.0

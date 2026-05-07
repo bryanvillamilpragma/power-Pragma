@@ -88,7 +88,12 @@ if (args.includes("-h") || args.includes("--help")) {
 
 function collectAllSkillPaths() {
   const out = new Set();
-  for (const tech of SKILLS_MAP) for (const s of tech.skills) out.add(s);
+  for (const tech of SKILLS_MAP) {
+    for (const s of tech.skills) out.add(s);
+    if (tech.workflows) for (const s of tech.workflows) out.add(s);
+    if (tech.autoRules) for (const s of tech.autoRules) out.add(s);
+    if (tech.agents) for (const s of tech.agents) out.add(s);
+  }
   for (const c of COMBO_SKILLS_MAP) for (const s of c.skills) out.add(s);
   for (const s of FRONTEND_BONUS_SKILLS) out.add(s);
   return [...out];

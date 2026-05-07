@@ -143,6 +143,72 @@ Todos los IDEs son `isGlobal: true` (se detectan en `$HOME`):
 - El manifiesto `skills-registry/index.json` contiene: source, commitSha, files, sha256 por archivo, bundleHash, y resultado del review.
 - `scripts/validate-registry.mjs` se ejecuta en `prepublishOnly` para garantizar consistencia.
 
+### Skills locales de Pragma vs skills upstream
+
+El registry maneja **dos tipos de skills**:
+
+#### 1. Skills upstream (sincronizados desde GitHub)
+
+- Se descargan con `pnpm sync:skills` desde repos públicos (e.g. `vercel-labs/next-skills`, `angular/skills`).
+- Se auditan automáticamente con OpenAI antes de persistirse.
+- Su entry en `index.json` tiene `commitSha` con un SHA de git real y `skillPath` con la ruta completa (`owner/repo/skill-name`).
+- Para re-sincronizar: `pnpm sync:skills --only <skill-name>` o `pnpm sync:skills --force`.
+
+#### 2. Skills locales de Pragma (agregados manualmente)
+
+- **No viven en un repo externo**: se mantienen directamente en `skills-registry/` dentro de este repositorio.
+- Su entry en `index.json` tiene `commitSha: "local"` y usa `source` (equivalente a `skillPath`).
+- Incluyen: todas las carpetas bajo `skills-registry/rules/`, `skills-registry/workflows/`, y skills como `angular-security`, `clean-architecture-uml`, `typescript-best-practices`, etc.
+- Para agregar un skill local nuevo:
+  1. Crear la carpeta en `skills-registry/<nombre>/` con al menos un `SKILL.md`.
+  2. Agregar una entry en `skills-registry/index.json` con `commitSha: "local"`, `source`, `files`, `sha256`, y `bundleHash`.
+  3. Declarar el skill en `skills-map.ts` bajo la tecnología correcta (campo `skills`, `workflows`, `autoRules` o `agents`).
+  4. Ejecutar `pnpm validate:registry` para verificar consistencia.
+
+#### Campos del skills-map.ts que declaran contenido instalable
+
+| Campo        | Propósito                                            | Ejemplo                                        |
+| ------------ | ---------------------------------------------------- | ---------------------------------------------- |
+| `skills`     | Skills de conocimiento (Markdown con best practices) | `"pragma/autoskills/react-security"`           |
+| `workflows`  | Workflows multi-paso (code-review, testing, etc.)    | `"pragma/autoskills/workflows/unit-test-review"`|
+| `autoRules`  | Reglas auto-inyectadas (SOLID, seguridad, etc.)      | `"pragma/autoskills/rules/solid-clean"`        |
+| `agents`     | Agentes autónomos con instrucciones de ejecución     | `"pragma/autoskills/workflows/create-view"`    |
+
+> **Importante**: `validate-registry.mjs` y `sync-skills.mjs` recopilan entries de **todos** estos campos.
+> Si un skill existe en `index.json` pero no está declarado en ninguno de estos campos, la validación falla.
+
+#### Regenerar hashes de skills locales
+
+Si editas el contenido de un skill local (e.g. modificas `SKILL.md`), los hashes en `index.json` quedarán desactualizados. Para regenerarlos:
+
+```bash
+node -e "
+import { createHash } from 'node:crypto';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+const REGISTRY_DIR = 'skills-registry';
+const MANIFEST_PATH = join(REGISTRY_DIR, 'index.json');
+const manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf-8'));
+const sha256Hex = (buf) => createHash('sha256').update(buf).digest('hex');
+for (const [name, entry] of Object.entries(manifest.skills)) {
+  if (entry.commitSha !== 'local') continue;
+  const dir = join(REGISTRY_DIR, name);
+  if (!existsSync(dir)) continue;
+  const newSha = {}, parts = [];
+  for (const file of entry.files) {
+    const h = sha256Hex(readFileSync(join(dir, file)));
+    newSha[file] = h; parts.push(file+':'+h);
+  }
+  entry.sha256 = newSha;
+  entry.bundleHash = sha256Hex(parts.sort().join('\n'));
+}
+writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');
+console.log('Hashes regenerated.');
+"
+```
+
+Luego ejecutar `pnpm validate:registry` para confirmar.
+
 ---
 
 ## Auth System

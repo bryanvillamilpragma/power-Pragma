@@ -33,6 +33,9 @@ function collectDeclaredSkills() {
 
   for (const tech of SKILLS_MAP) {
     for (const skill of tech.skills) add(skill, tech.id);
+    if (tech.workflows) for (const skill of tech.workflows) add(skill, tech.id);
+    if (tech.autoRules) for (const skill of tech.autoRules) add(skill, tech.id);
+    if (tech.agents) for (const skill of tech.agents) add(skill, tech.id);
   }
   for (const combo of COMBO_SKILLS_MAP) {
     for (const skill of combo.skills) add(skill, combo.id);
@@ -102,9 +105,10 @@ function main() {
       continue;
     }
 
-    if (entry.skillPath !== declaredSkill.full) {
+    const entryPath = entry.skillPath || entry.source;
+    if (entryPath !== declaredSkill.full) {
       errors.push(
-        `${skillName}: registry skillPath is ${entry.skillPath}, expected ${declaredSkill.full}`,
+        `${skillName}: registry skillPath is ${entryPath}, expected ${declaredSkill.full}`,
       );
     }
 

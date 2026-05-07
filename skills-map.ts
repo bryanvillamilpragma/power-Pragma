@@ -49,6 +49,11 @@ export const SKILLS_MAP: Technology[] = [
     ],
     workflows: [
       "pragma/autoskills/workflows/unit-test-review",
+      "pragma/autoskills/workflows/code-reviewer",
+      "pragma/autoskills/workflows/dependency-scanner",
+      "pragma/autoskills/workflows/performance-optimizer",
+      "pragma/autoskills/workflows/security-auditor",
+      "pragma/autoskills/workflows/microfrontend-architect",
     ],
     autoRules: [
       "pragma/autoskills/rules/solid-clean",
@@ -70,6 +75,13 @@ export const SKILLS_MAP: Technology[] = [
     skills: [
       "vercel-labs/next-skills/next-best-practices",
       "pragma/autoskills/nextjs-shadcn",
+    ],
+    workflows: [
+      "pragma/autoskills/workflows/code-reviewer",
+      "pragma/autoskills/workflows/dependency-scanner",
+      "pragma/autoskills/workflows/performance-optimizer",
+      "pragma/autoskills/workflows/security-auditor",
+      "pragma/autoskills/workflows/microfrontend-architect",
     ],
     autoRules: [
       "pragma/autoskills/rules/solid-clean",
@@ -140,6 +152,11 @@ export const SKILLS_MAP: Technology[] = [
     ],
     workflows: [
       "pragma/autoskills/workflows/unit-test-review",
+      "pragma/autoskills/workflows/code-reviewer",
+      "pragma/autoskills/workflows/dependency-scanner",
+      "pragma/autoskills/workflows/performance-optimizer",
+      "pragma/autoskills/workflows/security-auditor",
+      "pragma/autoskills/workflows/microfrontend-architect",
     ],
     autoRules: [
       "pragma/autoskills/rules/clean-architecture",
