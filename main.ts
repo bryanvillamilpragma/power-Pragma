@@ -648,15 +648,14 @@ async function selectWorkflows(workflows: SkillEntry[], autoYes: boolean): Promi
       const { skillName } = parseSkillPath(w.skill);
       const shortName = skillName.split("/").pop()!;
       const agent = AGENTS_REGISTRY.find((a) => a.name === shortName);
-      const desc = agent?.description ?? "";
-      const installedTag = w.installed ? dim(" (installed)") : "";
-      return `${cyan(bold(shortName))}  ${dim(desc)}${installedTag}`;
+      const fullDesc = agent?.description ?? "";
+      const installedTag = w.installed ? dim(" ✔") : "";
+      // Truncate desc to prevent line wrapping: prefix(10) + name + sep(2) + margin(4)
+      const cols = process.stdout.columns ?? 80;
+      const maxDesc = Math.max(15, cols - shortName.length - 16);
+      const desc = fullDesc.length > maxDesc ? fullDesc.slice(0, maxDesc - 1) + "…" : fullDesc;
+      return `${w.installed ? dim(shortName) : cyan(bold(shortName))}  ${dim(desc)}${installedTag}`;
     },
-    hintFn: (w) => {
-      const techSources = w.sources.filter((s) => !s.includes(" + "));
-      return techSources.length > 0 ? `← ${techSources.join(", ")}` : "";
-    },
-    groupFn: (w) => w.sources[0],
     initialSelected,
     shortcuts:
       installedCount > 0
