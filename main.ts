@@ -543,6 +543,68 @@ async function runAuthGate(): Promise<void> {
   }
 }
 
+// ── Agents registry ───────────────────────────────────────────
+
+interface AgentEntry {
+  name: string;
+  description: string;
+  requires: string[];
+  skillPath: string;
+  hint: string;
+}
+
+const AGENTS_REGISTRY: AgentEntry[] = [
+  {
+    name: "unit-test-review",
+    description: "Revisa y genera unit tests siguiendo el patrón del proyecto",
+    requires: ["react", "angular"],
+    skillPath: "pragma/autoskills/workflows/unit-test-review",
+    hint: "Tests con Vitest/Jest y Testing Library",
+  },
+  {
+    name: "create-view",
+    description: "Crea vistas y páginas con las convenciones del stack",
+    requires: ["react", "angular", "nextjs"],
+    skillPath: "pragma/autoskills/workflows/create-view",
+    hint: "Vistas estructuradas con routing y estado",
+  },
+  {
+    name: "code-reviewer",
+    description: "Revisa código por anti-patrones, calidad arquitectural y principios SOLID",
+    requires: ["react", "angular", "nextjs"],
+    skillPath: "pragma/autoskills/workflows/code-reviewer",
+    hint: "Detecta anti-patrones, God components y code smells",
+  },
+  {
+    name: "performance-optimizer",
+    description: "Optimiza Core Web Vitals, bundle size y rendimiento de renderizado",
+    requires: ["react", "angular", "nextjs"],
+    skillPath: "pragma/autoskills/workflows/performance-optimizer",
+    hint: "Core Web Vitals, bundle size y render performance",
+  },
+  {
+    name: "security-auditor",
+    description: "Detecta vulnerabilidades OWASP Top 10, XSS, tokens expuestos y secrets",
+    requires: ["react", "angular", "nextjs"],
+    skillPath: "pragma/autoskills/workflows/security-auditor",
+    hint: "OWASP Top 10, XSS, tokens y secrets en código",
+  },
+  {
+    name: "microfrontend-architect",
+    description: "Diseña e implementa arquitecturas microfrontend con Module Federation",
+    requires: ["react", "angular", "nextjs"],
+    skillPath: "pragma/autoskills/workflows/microfrontend-architect",
+    hint: "Shell + remotes, shared deps, routing y comunicación entre MFEs",
+  },
+  {
+    name: "figma-to-code",
+    description: "Convierte diseños de Figma a componentes production-ready con tokens y variantes",
+    requires: ["react", "angular", "nextjs", "astro"],
+    skillPath: "pragma/autoskills/workflows/figma-to-code",
+    hint: "Figma URL → React/Angular/Next.js/Astro + Tailwind tokens",
+  },
+];
+
 // ── Workflow Selection ───────────────────────────────────────
 
 async function selectWorkflows(workflows: SkillEntry[], autoYes: boolean): Promise<SkillEntry[]> {
@@ -740,70 +802,6 @@ async function installAll(
   log(pink("   sopp-front — AI Skills CLI by Pragma Engineering"));
   log();
 }
-
-// ── Agents registry ───────────────────────────────────────────
-
-interface AgentEntry {
-  name: string;        // "create-component"
-  description: string; // short label shown in the list
-  requires: string[];  // technology IDs that unlock this agent
-  skillPath: string;   // registry path used by installAll
-  hint: string;        // sub-text shown in the selector
-}
-
-// Hardcoded until the remote registry natively carries agent metadata.
-// Keep in sync with skills-map.ts workflows/agents fields.
-const AGENTS_REGISTRY: AgentEntry[] = [
-  {
-    name: "unit-test-review",
-    description: "Revisa y genera unit tests siguiendo el patrón del proyecto",
-    requires: ["react", "angular"],
-    skillPath: "pragma/autoskills/workflows/unit-test-review",
-    hint: "Tests con Vitest/Jest y Testing Library",
-  },
-  {
-    name: "create-view",
-    description: "Crea vistas y páginas con las convenciones del stack",
-    requires: ["react", "angular", "nextjs"],
-    skillPath: "pragma/autoskills/workflows/create-view",
-    hint: "Vistas estructuradas con routing y estado",
-  },
-  {
-    name: "code-reviewer",
-    description: "Revisa código por anti-patrones, calidad arquitectural y principios SOLID",
-    requires: ["react", "angular", "nextjs"],
-    skillPath: "pragma/autoskills/workflows/code-reviewer",
-    hint: "Detecta anti-patrones, God components y code smells",
-  },
-  {
-    name: "performance-optimizer",
-    description: "Optimiza Core Web Vitals, bundle size y rendimiento de renderizado",
-    requires: ["react", "angular", "nextjs"],
-    skillPath: "pragma/autoskills/workflows/performance-optimizer",
-    hint: "Core Web Vitals, bundle size y render performance",
-  },
-  {
-    name: "security-auditor",
-    description: "Detecta vulnerabilidades OWASP Top 10, XSS, tokens expuestos y secrets",
-    requires: ["react", "angular", "nextjs"],
-    skillPath: "pragma/autoskills/workflows/security-auditor",
-    hint: "OWASP Top 10, XSS, tokens y secrets en código",
-  },
-  {
-    name: "microfrontend-architect",
-    description: "Diseña e implementa arquitecturas microfrontend con Module Federation",
-    requires: ["react", "angular", "nextjs"],
-    skillPath: "pragma/autoskills/workflows/microfrontend-architect",
-    hint: "Shell + remotes, shared deps, routing y comunicación entre MFEs",
-  },
-  {
-    name: "figma-to-code",
-    description: "Convierte diseños de Figma a componentes production-ready con tokens y variantes",
-    requires: ["react", "angular", "nextjs", "astro"],
-    skillPath: "pragma/autoskills/workflows/figma-to-code",
-    hint: "Figma URL → React/Angular/Next.js/Astro + Tailwind tokens",
-  },
-];
 
 // ── Agents screen ─────────────────────────────────────────────
 
