@@ -31,7 +31,7 @@ import {
     securityCheckForSkillPath,
 } from "./installer.js";
 import type { ComboSkill, SkillEntry, Technology } from "./lib.js";
-import { collectAutoRules, collectSkills, collectWorkflows, detectAgents, detectInstalledIDEs, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
+import { collectAutoPrompts, collectAutoRules, collectSkills, collectWorkflows, detectAgents, detectInstalledIDEs, detectTechnologies, getInstalledSkillNames, parseSkillPath } from "./lib.js";
 import { formatTime, multiSelect, printBanner, printStepHeader } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -724,6 +724,8 @@ async function selectIDEs(
 async function installAll(
   skills: SkillEntry[],
   workflows: SkillEntry[],
+  autoRules: SkillEntry[],
+  autoPrompts: SkillEntry[],
   ides: { global: ReturnType<typeof detectInstalledIDEs>["global"]; local: ReturnType<typeof detectInstalledIDEs>["local"] },
   opts: { projectDir: string; verbose: boolean },
 ): Promise<void> {
@@ -738,6 +740,8 @@ async function installAll(
   const startTime = Date.now();
   let totalSkillsInstalled = 0;
   let totalWorkflowsInstalled = 0;
+  let totalRulesInstalled = 0;
+  let totalPromptsInstalled = 0;
   let totalFailed = 0;
 
   // ── Skills ──────────────────────────────────────────────────
@@ -780,21 +784,60 @@ async function installAll(
     }
   }
 
+  // ── Auto-rules (silenciosas) ──────────────────────────────
+  for (const rule of autoRules) {
+    const { skillName: registrySubPath } = parseSkillPath(rule.skill);
+    const ruleName = registrySubPath.split("/").pop() ?? registrySubPath;
+    const localSkillDir = join(registryDir, ...registrySubPath.split("/"));
+
+    const result = existsSync(localSkillDir)
+      ? installLocalSkillGlobal(ruleName, localSkillDir, ides.global, ides.local, { projectDir, verbose }, "rule")
+      : await installSkillGlobal(rule.skill, ides.global, ides.local, { projectDir, verbose }, "rule");
+
+    if (result.installed.length > 0) {
+      totalRulesInstalled++;
+    } else if (result.error || result.failed.length > 0) {
+      totalFailed++;
+    }
+    if (verbose) {
+      for (const inst of result.installed) {
+        log(green("   ✔") + dim(` [rule] ${ruleName} → ${inst.ide}`));
+      }
+    }
+  }
+
+  // ── Auto-prompts (silenciosos) ────────────────────────────
+  for (const prompt of autoPrompts) {
+    const { skillName: registrySubPath } = parseSkillPath(prompt.skill);
+    const promptName = registrySubPath.split("/").pop() ?? registrySubPath;
+    const localSkillDir = join(registryDir, ...registrySubPath.split("/"));
+
+    const result = existsSync(localSkillDir)
+      ? installLocalSkillGlobal(promptName, localSkillDir, ides.global, ides.local, { projectDir, verbose }, "prompt")
+      : await installSkillGlobal(prompt.skill, ides.global, ides.local, { projectDir, verbose }, "prompt");
+
+    if (result.installed.length > 0) {
+      totalPromptsInstalled++;
+    } else if (result.error || result.failed.length > 0) {
+      totalFailed++;
+    }
+  }
+
   const elapsed = Date.now() - startTime;
   const ideCount = allIDEs.length;
-  const skillsPart = totalSkillsInstalled > 0
-    ? bold(`${totalSkillsInstalled} skill${totalSkillsInstalled !== 1 ? "s" : ""}`)
-    : "";
-  const workflowsPart = totalWorkflowsInstalled > 0
-    ? bold(`${totalWorkflowsInstalled} workflow${totalWorkflowsInstalled !== 1 ? "s" : ""}`)
-    : "";
-  const installedPart = [skillsPart, workflowsPart].filter(Boolean).join(bold(" + "));
+  const mainParts: string[] = [];
+  if (totalSkillsInstalled > 0) mainParts.push(bold(`${totalSkillsInstalled} skill${totalSkillsInstalled !== 1 ? "s" : ""}`));
+  if (totalWorkflowsInstalled > 0) mainParts.push(bold(`${totalWorkflowsInstalled} workflow${totalWorkflowsInstalled !== 1 ? "s" : ""}`));
+  const mainInstalled = mainParts.join(bold(" + ")) || "nothing";
 
   log();
   log(
     green("  ✔ ") +
-    installedPart +
-    dim(` installed across ${ideCount} IDE${ideCount !== 1 ? "s" : ""} in ${formatTime(elapsed)}`),
+    mainInstalled +
+    dim(" installed") +
+    (totalRulesInstalled > 0 ? dim(` + ${totalRulesInstalled} rule${totalRulesInstalled !== 1 ? "s" : ""} auto-applied`) : "") +
+    (totalPromptsInstalled > 0 ? dim(` + ${totalPromptsInstalled} prompt${totalPromptsInstalled !== 1 ? "s" : ""} auto-applied`) : "") +
+    dim(` across ${ideCount} IDE${ideCount !== 1 ? "s" : ""} in ${formatTime(elapsed)}`),
   );
   if (totalFailed > 0) {
     log(yellow(`  ⚠ ${totalFailed} failed`));
@@ -1093,12 +1136,14 @@ async function main(): Promise<void> {
     : validSkills.filter((s) => localSkillDirs.has(parseSkillPath(s.skill).skillName));
 
   const allWorkflows = collectWorkflows({ detected, installedNames });
+  const autoRules = collectAutoRules({ detected, installedNames });
+  const autoPrompts = collectAutoPrompts({ detected, installedNames });
 
   if (!dryRun) {
     setImmediate(loadRegistry);
   }
 
-  // ── Dry-run: show skills + workflows + IDEs, then exit ──
+  // ── Dry-run: show skills + workflows + rules + prompts + IDEs, then exit ──
   if (dryRun) {
     printSkillsList(skills);
     if (allWorkflows.length > 0) {
@@ -1110,6 +1155,12 @@ async function main(): Promise<void> {
         log(dim(`     • ${skillName}`) + (w.sources.length > 0 ? dim(`  ← ${w.sources.join(", ")}`) : ""));
       }
       log();
+    }
+    if (autoRules.length > 0) {
+      log(dim(`   Rules (auto): ${autoRules.map((r) => parseSkillPath(r.skill).skillName.split("/").pop()).join(", ")}`));
+    }
+    if (autoPrompts.length > 0) {
+      log(dim(`   Prompts (auto): ${autoPrompts.map((p) => parseSkillPath(p.skill).skillName.split("/").pop()).join(", ")}`));
     }
     const { global: dryGlobal, local: dryLocal } = detectInstalledIDEs(projectDir);
     const dryIDEs = [...dryGlobal, ...dryLocal];
@@ -1150,7 +1201,7 @@ async function main(): Promise<void> {
   const selectedIDEs = await selectIDEs(projectDir, autoYes);
 
   // ── Install everything in a single pass ──────────────────
-  await installAll(selectedSkills, selectedWorkflows, selectedIDEs, { projectDir, verbose });
+  await installAll(selectedSkills, selectedWorkflows, autoRules, autoPrompts, selectedIDEs, { projectDir, verbose });
 }
 
 // Run main() only when invoked as CLI entry point — not when imported by tests.

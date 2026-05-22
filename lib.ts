@@ -747,6 +747,38 @@ export function collectAutoRules(params: {
   return result;
 }
 
+export function collectAutoPrompts(params: {
+  detected: Technology[];
+  installedNames?: Set<string> | string[] | null;
+}): SkillEntry[] {
+  const { detected, installedNames = null } = params;
+  const installedSet =
+    installedNames instanceof Set
+      ? installedNames
+      : installedNames
+      ? new Set(installedNames)
+      : null;
+  const seen = new Set<string>();
+  const result: SkillEntry[] = [];
+
+  for (const tech of detected) {
+    if (!tech.autoPrompts) continue;
+    for (const promptPath of tech.autoPrompts) {
+      const { skillName } = parseSkillPath(promptPath);
+      if (seen.has(skillName)) continue;
+      if (installedSet?.has(skillName)) continue;
+      seen.add(skillName);
+      result.push({
+        skill: promptPath,
+        sources: [tech.name],
+        installed: false,
+      });
+    }
+  }
+
+  return result;
+}
+
 export function collectAgents(params: {
   detected: Technology[];
   combos?: ComboSkill[];

@@ -69,16 +69,15 @@ describe("collectSkills", () => {
     strictEqual(skills.length, 2);
   });
 
-  it("collects Go curated skills in declared order", () => {
-    writePackageJson(tmp.path);
-    writeFile(tmp.path, "go.mod", "module example.com/test\n\ngo 1.24.0\n");
+  it("collects React skills in declared order", () => {
+    writePackageJson(tmp.path, { dependencies: { react: "^19", "react-dom": "^19" } });
     const { detected } = detectTechnologies(tmp.path);
     const skills = collectSkills({ detected, isFrontend: false });
     deepStrictEqual(
       skills.slice(0, 2).map(({ skill, sources }) => ({ skill, sources })),
       [
-        { skill: "affaan-m/everything-claude-code/golang-patterns", sources: ["Go"] },
-        { skill: "affaan-m/everything-claude-code/golang-testing", sources: ["Go"] },
+        { skill: "sopp-front/skills/react-security", sources: ["React"] },
+        { skill: "sopp-front/skills/vercel-react-best-practices", sources: ["React"] },
       ],
     );
   });

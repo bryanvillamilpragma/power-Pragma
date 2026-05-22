@@ -113,7 +113,7 @@ describe("collectWorkflows", () => {
     strictEqual(result.length, 1);
   });
 
-  it("omite workflows ya instalados", async () => {
+  it("marca workflows ya instalados con installed: true", async () => {
     const { collectWorkflows } = await import("../lib.js");
     const mockAngular = {
       id: "angular", name: "Angular", detect: {}, skills: [],
@@ -125,7 +125,8 @@ describe("collectWorkflows", () => {
       installedNames: ["create-component"],
     });
 
-    strictEqual(result.length, 0);
+    strictEqual(result.length, 1);
+    strictEqual(result[0].installed, true);
   });
 
   it("retorna array vacío si no hay workflows en el stack", async () => {

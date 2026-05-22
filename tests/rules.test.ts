@@ -15,6 +15,7 @@ describe("rules registry — archivos existen", () => {
     "performance",
     "clean-architecture",
     "security",
+    "responsive-design",
   ];
 
   for (const rule of expectedRules) {
@@ -34,11 +35,27 @@ describe("rules registry — frontmatter correcto", () => {
       "performance",
       "clean-architecture",
       "security",
+      "responsive-design",
     ];
     for (const rule of rules) {
       const content = readFileSync(join(rulesDir, rule, "SKILL.md"), "utf-8");
       ok(content.includes("trigger: always_on"), `${rule}/SKILL.md falta trigger: always_on`);
     }
+  });
+});
+
+describe("responsive-design rule", () => {
+  const rulesDir = join(__dirname, "..", "skills-registry", "rules");
+
+  it("contiene flujo Figma y breakpoints", () => {
+    const content = readFileSync(join(rulesDir, "responsive-design", "SKILL.md"), "utf-8");
+    ok(content.includes("trigger: always_on"),  "falta trigger: always_on");
+    ok(content.includes("type: rule"),           "falta type: rule");
+    ok(content.includes("mobile"),              "falta breakpoint mobile");
+    ok(content.includes("tablet"),              "falta breakpoint tablet");
+    ok(content.includes("desktop"),             "falta breakpoint desktop");
+    ok(content.includes("Figma"),               "falta flujo Figma");
+    ok(content.includes("mobile-first"),        "falta principio mobile-first");
   });
 });
 
@@ -55,15 +72,17 @@ describe("collectAutoRules", () => {
         "pragma/autoskills/rules/solid-clean",
         "pragma/autoskills/rules/code-test",
         "pragma/autoskills/rules/security",
+        "pragma/autoskills/rules/responsive-design",
       ],
     };
 
     const result = collectAutoRules({ detected: [mockAngular], installedNames: [] });
-    strictEqual(result.length, 4);
+    strictEqual(result.length, 5);
     ok(result.some((r) => r.skill.includes("clean-architecture")));
     ok(result.some((r) => r.skill.includes("solid-clean")));
     ok(result.some((r) => r.skill.includes("code-test")));
     ok(result.some((r) => r.skill.includes("security")));
+    ok(result.some((r) => r.skill.includes("responsive-design")));
   });
 
   it("no duplica rules si dos tecnologías las comparten", async () => {
