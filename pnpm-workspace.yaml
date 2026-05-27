@@ -1,0 +1,97 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# pnpm v11 — project configuration
+#
+# In pnpm v11, ALL non-auth settings live here.
+# Auth / registry tokens stay in .npmrc.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ─── Security — supply-chain ──────────────────────────────────────────────────
+
+# Reject packages published less than 3 days ago.
+# The pnpm v11 default is already 1 440 min (24 h); raising to 4 320 (3 days)
+# gives extra protection against "package takeover → instant publish" attacks.
+minimumReleaseAge: 4320 # minutes  →  3 days
+
+# Fail resolution when NO version of a package passes the age check.
+# Without this, pnpm silently falls back to a non-compliant (possibly brand-new) version.
+minimumReleaseAgeStrict: true
+
+# Skip the age check for packages whose registry metadata lacks a `time` field
+# (some private / mirror registries omit it). Keeps installs working in those environments.
+minimumReleaseAgeIgnoreMissingTime: true
+
+# Only direct dependencies may use exotic sources (git URLs, tarball URLs).
+# Transitive deps must always come from a trusted registry.
+blockExoticSubdeps: true
+
+# ─── Security — build scripts ─────────────────────────────────────────────────
+
+# Explicit allowlist of packages permitted to run install scripts.
+# This project has no native modules — the map is intentionally empty.
+# When a new dep with a build script is added pnpm will prompt for approval
+# and you then add it here (e.g.  esbuild: true).
+allowBuilds: {}
+
+# Fail the install if any dependency has an unreviewed build script
+# (i.e. a script not covered by allowBuilds above).
+strictDepBuilds: true
+
+# ─── Package-manager version enforcement ──────────────────────────────────────
+
+# Fail when the running pnpm version does not match the `packageManager` field
+# in package.json.  Forces the whole team to use the declared version instead of
+# silently downloading a different one.
+pmOnFail: error
+
+# ─── Node.js engine enforcement ───────────────────────────────────────────────
+
+# Honour the `engines.node` field in every package, not only the project root.
+# This project requires Node >=22.6.0 (see package.json → engines).
+engineStrict: true
+
+# ─── Peer dependencies ────────────────────────────────────────────────────────
+
+# Automatically install missing non-optional peer dependencies (pnpm v11 default).
+autoInstallPeers: true
+
+# Do NOT fail on peer-dep version conflicts — too noisy for a CLI tool with few deps.
+# Set to true if you want CI to catch peer-dep issues early.
+strictPeerDependencies: false
+
+# After resolution, collapse packages whose peer deps don't conflict into a single
+# instance.  Reduces node_modules size.
+dedupePeerDependents: true
+
+# ─── Dependency resolution ────────────────────────────────────────────────────
+
+# Use the highest available version of each package (pnpm default).
+# Switch to "time-based" for extra supply-chain hardening once your registry
+# exposes the `time` metadata field.
+resolutionMode: highest
+
+# ─── Scripts ──────────────────────────────────────────────────────────────────
+
+# Run pre/post lifecycle hooks automatically (e.g. prebuild → build → postbuild).
+enablePrePostScripts: true
+
+# Check — and auto-install if needed — dependencies before any `pnpm run` command.
+# Prevents "module not found" surprises after a fresh clone or branch switch.
+verifyDepsBeforeRun: install
+
+# ─── Lockfile ─────────────────────────────────────────────────────────────────
+
+# Perform a headless install when the lockfile already satisfies all manifests.
+# Skips the resolution phase → faster CI pipelines.
+preferFrozenLockfile: true
+
+# ─── Side-effects cache ───────────────────────────────────────────────────────
+
+# Cache the output of package install scripts and reuse it on future installs.
+# Speeds up repeat installs significantly in monorepos and CI caches.
+sideEffectsCache: true
+
+# ─── Version prefix ───────────────────────────────────────────────────────────
+
+# When `pnpm add <pkg>` writes to package.json, prefix versions with ^ (caret).
+# Allows minor + patch upgrades; omit the patch floor for flexibility.
+savePrefix: "^"
