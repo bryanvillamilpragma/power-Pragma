@@ -1,16 +1,88 @@
 ---
 name: dependency-management
-description: Frontend dependency management, supply chain security, and package auditing. Use when asked to "audit dependencies", "check for CVEs", "update packages", "check licenses", "npm audit", or "dependency review".
+description: Frontend dependency management, supply chain security, and package auditing. Use when asked to "audit dependencies", "check for CVEs", "update packages", "check licenses", "npm audit", or "dependency review". Includes npm vulnerability context and migration path to pnpm.
 license: MIT
 metadata:
   author: pragma-frontend-security
-  version: "1.0"
+  version: "2.0"
   scope: "npm, yarn, pnpm ecosystems"
 ---
 
 # Dependency Management — Complete Knowledge Base
 
 Best practices for managing frontend dependencies securely and efficiently. Covers supply chain security, CVE detection, license compliance, version strategies, and package health evaluation.
+
+> **Recommendation:** Use **pnpm** as your package manager. It is the only one with native `min-version-age` support — the most effective defense against the supply chain attacks described in this document.
+
+---
+
+## D0 — npm Supply Chain Risk (Current Threat Landscape)
+
+### Why npm Projects Are at Higher Risk
+
+Recent incidents demonstrate that malicious packages are injected into npm immediately after publication — attackers exploit the window between publish and detection (minutes to hours). npm has **no native mechanism to enforce a cooling-off period** before packages can be installed.
+
+| Package Manager | `min-version-age` | Lockfile Integrity | Phantom Dependency Protection |
+|---|---|---|---|
+| **pnpm** | ✅ Built-in | ✅ Strict | ✅ |
+| npm | ❌ Not available | Partial | ❌ |
+| yarn | ❌ Not available | ✅ Strict | ❌ |
+
+### Notable npm Supply Chain Incidents
+
+| Year | Incident | Impact |
+|---|---|---|
+| 2018 | `event-stream` — compromised maintainer injected crypto-stealing code | Millions of downloads |
+| 2021 | `ua-parser-js` — hijacked, three malicious versions published in hours | Widespread enterprise exposure |
+| 2022 | `colors` / `faker` — intentional protestware by maintainer | Production breakage across thousands of projects |
+| 2024 | `polyfill.io` — CDN hijacked, malicious scripts injected into 100k+ sites | Widespread frontend exposure |
+| 2025 | Multiple npm packages with malicious `postinstall` scripts | Active exploitation ongoing |
+
+> Note: the xz-utils (2024) backdoor was a system library attack (liblzma), not npm — but it demonstrates that supply chain attacks affect all ecosystems via social engineering.
+
+### npm Mitigation (if migration is not immediate)
+
+```ini
+# .npmrc — minimum required for npm projects
+save-exact=true
+ignore-scripts=true
+```
+
+```bash
+# CI/CD
+npm ci                              # Never npm install in CI
+npm audit --audit-level=moderate    # Fail on moderate+
+
+# Before installing ANY new package
+npm info <pkg> time.created dist-tags.latest   # Check publish date
+# Never install packages published < 1 day ago
+npm install <pkg>@<exact-version> --save-exact
+```
+
+### Migration: npm → pnpm
+
+```bash
+# 1. Enable pnpm via corepack (no global install)
+corepack enable && corepack use pnpm@latest
+
+# 2. Import existing lockfile
+pnpm import           # generates pnpm-lock.yaml from package-lock.json
+
+# 3. Reinstall cleanly
+rm package-lock.json && rm -rf node_modules
+pnpm install
+
+# 4. Add min-version-age to .npmrc
+echo "min-version-age=3" >> .npmrc
+
+# 5. Pin packageManager in package.json
+# { "packageManager": "pnpm@10.x.x" }
+
+# 6. Commit
+git add pnpm-lock.yaml package.json .npmrc
+git rm package-lock.json
+git commit -m "chore: migrate from npm to pnpm with supply chain hardening"
+```
 
 ---
 
@@ -30,52 +102,50 @@ Best practices for managing frontend dependencies securely and efficiently. Cove
 
 ```bash
 # ✅ Always commit lock files
-git add package-lock.json  # or yarn.lock or pnpm-lock.yaml
+git add pnpm-lock.yaml   # or package-lock.json / yarn.lock
 
 # ✅ Use lockfile-lint to detect unauthorized registries
 npx lockfile-lint \
-  --path package-lock.json \
-  --type npm \
+  --path pnpm-lock.yaml \
+  --type pnpm \
   --allowed-hosts npm \
   --validate-https
+# npm projects: --path package-lock.json --type npm
 
-# ✅ Disable install scripts for untrusted packages
+# ✅ Disable install scripts for untrusted packages (npm)
 npm config set ignore-scripts true
-# Then explicitly allow trusted ones in .npmrc:
-# @angular/cli:install-script=true
 
-# ✅ Use npm ci in CI/CD (respects lock file exactly)
-npm ci  # NOT npm install
+# ✅ Use frozen lockfile in CI
+pnpm install --frozen-lockfile   # pnpm
+npm ci                           # npm
 
 # ✅ Pin exact versions for critical dependencies
-npm install --save-exact react@19.0.0
+pnpm add react@18.3.1            # pnpm (exact by default with save-exact)
+npm install --save-exact react@18.3.1
 
 # ✅ Use provenance verification (npm v9.5+)
 npm audit signatures
 ```
 
-### .npmrc Security Configuration
+### .npmrc Security Configuration (pnpm)
 
 ```ini
-# .npmrc
-# Enforce lock file usage
+# Require packages to be at least 3 days old before install
+min-version-age=3
+
+# Shared lockfile for workspaces
+shared-workspace-lockfile=true
+```
+
+### .npmrc Security Configuration (npm fallback)
+
+```ini
 package-lock=true
-
-# Prevent publishing by accident
 access=restricted
-
-# Disable lifecycle scripts from untrusted packages
 ignore-scripts=true
-
-# Enforce strict SSL
 strict-ssl=true
-
-# Set registry explicitly
+save-exact=true
 registry=https://registry.npmjs.org/
-
-# For private packages
-@company:registry=https://npm.company.com/
-//npm.company.com/:_authToken=${NPM_TOKEN}
 ```
 
 ---
@@ -85,21 +155,25 @@ registry=https://registry.npmjs.org/
 ### Audit Commands
 
 ```bash
-# ✅ npm built-in audit
-npm audit                    # Show all vulnerabilities
-npm audit --audit-level=high # Only high and critical
-npm audit fix                # Auto-fix compatible versions
-npm audit fix --force        # Force major version updates (REVIEW CHANGES!)
+# pnpm
+pnpm audit
+pnpm audit --audit-level=moderate
 
-# ✅ Better audit with audit-ci (for CI pipelines)
-npx audit-ci --moderate      # Fail CI on moderate+ severity
+# npm
+npm audit
+npm audit --audit-level=moderate
+npm audit fix
+npm audit fix --force   # REVIEW CHANGES before committing
 
-# ✅ Snyk (more comprehensive, requires account)
-npx snyk test                # Test for vulnerabilities
-npx snyk monitor             # Add to continuous monitoring
+# Better audit for CI pipelines
+npx audit-ci --moderate
 
-# ✅ OSV-Scanner (Google's free vulnerability scanner)
-npx osv-scanner --lockfile=package-lock.json
+# Snyk (comprehensive, requires account)
+npx snyk test
+npx snyk monitor
+
+# OSV-Scanner (Google, free)
+npx osv-scanner --lockfile=pnpm-lock.yaml
 ```
 
 ### CVE Severity Decision Matrix
@@ -113,25 +187,13 @@ npx osv-scanner --lockfile=package-lock.json
 
 ### Resolution Strategies
 
-```typescript
-// Strategy 1: Direct update (preferred)
-// Check if newer version fixes the CVE
-npm update vulnerable-package
+```bash
+# Strategy 1: Direct update (preferred)
+pnpm update vulnerable-package
+```
 
-// Strategy 2: Override nested dependency
-// package.json — force a specific version of a transitive dependency
-{
-  "overrides": {
-    "vulnerable-transitive-dep": ">=2.0.1"
-  }
-}
-// yarn:
-{
-  "resolutions": {
-    "vulnerable-transitive-dep": ">=2.0.1"
-  }
-}
-// pnpm:
+```json
+// Strategy 2: Override nested dependency — package.json (pnpm)
 {
   "pnpm": {
     "overrides": {
@@ -139,14 +201,25 @@ npm update vulnerable-package
     }
   }
 }
+```
+
+```json
+// npm
+{
+  "overrides": {
+    "vulnerable-transitive-dep": ">=2.0.1"
+  }
+}
+```
+
+```bash
 
 // Strategy 3: Replace package entirely
-// If no fix exists, find an alternative
-npm uninstall vulnerable-package
-npm install secure-alternative
+pnpm remove vulnerable-package
+pnpm add secure-alternative@<exact-version>
 
 // Strategy 4: Mitigate if no fix available
-// Document the risk and apply compensating controls
+// Document the risk + apply compensating controls
 // e.g., CSP headers, input sanitization, WAF rules
 ```
 
@@ -167,165 +240,83 @@ npm install secure-alternative
 | AGPL-3.0 | 🔴 Critical | Conditional | Yes + Network | **Avoid in SaaS** |
 | LGPL-2.1/3.0 | 🟡 Medium | Yes (with rules) | Partial | OK for dynamic linking |
 | Unlicensed | 🔴 Critical | Unknown | Unknown | **Never use** |
-| WTFPL | 🟡 Medium | Yes | No | Not legally tested |
 
 ### Audit Licenses
 
 ```bash
-# ✅ List all dependency licenses
 npx license-checker --summary
-
-# ✅ Fail on problematic licenses
-npx license-checker \
-  --failOn "GPL-2.0;GPL-3.0;AGPL-3.0" \
-  --excludePackages "dev-only-internal-tool"
-
-# ✅ Generate license report (compliance)
+npx license-checker --failOn "GPL-2.0;GPL-3.0;AGPL-3.0"
 npx license-checker --csv --out licenses.csv
-
-# ✅ Alternative: license-report
-npx license-report --only=prod --output=table
 ```
 
 ---
 
 ## D4 — Package Health Evaluation
 
-Before installing ANY new package, evaluate:
-
-### Health Checklist
+Before installing ANY new package:
 
 | Criterion | Green Flag | Red Flag |
 |-----------|-----------|----------|
+| **Age** | >3 days since publish | <1 day (block with min-version-age) |
 | **Downloads/week** | >10,000 | <100 |
 | **Last publish** | <6 months | >2 years |
 | **Maintainers** | >1 active | 1 inactive |
 | **GitHub stars** | >500 | <10 |
 | **Open issues** | Actively triaged | 100+ abandoned |
 | **Dependencies** | <5 direct deps | 50+ deep chain |
-| **Bundle size** | Reasonable for function | Unexpectedly large |
 | **TypeScript** | Native or @types | No types available |
 | **Test coverage** | Has CI/tests | No test suite |
 | **Security policy** | SECURITY.md exists | No reporting process |
 
-### Bundle Impact Analysis
-
 ```bash
-# ✅ Check bundle size before installing
-# Use bundlephobia.com or:
+# Check publish date before installing
+npm info <package> time.created dist-tags.latest
+
+# Check bundle size impact
 npx bundle-phobia <package-name>
-
-# ✅ Analyze current bundle
-npx @next/bundle-analyzer   # Next.js
-npx webpack-bundle-analyzer  # Webpack
-npx vite-bundle-visualizer   # Vite
-
-# ✅ Import cost in IDE (install "Import Cost" extension)
-import { debounce } from 'lodash';        // 70KB! ❌
-import debounce from 'lodash/debounce';    // 1KB  ✅
-import { debounce } from 'lodash-es';      // Tree-shakeable ✅
 ```
 
 ---
 
 ## D5 — Version Strategy
 
-### Semantic Versioning
-
-```
-MAJOR.MINOR.PATCH
-  ^     ^     ^
-  |     |     └── Bug fixes (safe to update)
-  |     └──────── New features (usually safe)
-  └────────────── Breaking changes (REVIEW REQUIRED)
-```
-
-### Version Pinning Strategy
-
 ```json
 {
   "dependencies": {
-    // ✅ Pin exact for critical deps (React, Angular, Next)
-    "react": "19.0.0",
-    "next": "15.2.0",
-
-    // ✅ Allow patch updates for stable libs
-    "zod": "~3.23.0",
-
-    // ✅ Allow minor updates for well-maintained utility libs
-    "clsx": "^2.1.0",
-
-    // ❌ NEVER use
-    "some-lib": "*",      // Installs any version
-    "some-lib": "latest"  // Same problem
+    "react": "18.3.1",
+    "next": "15.2.0"
   }
 }
 ```
 
+**Never use ranges** — especially in pnpm projects. `^` and `~` allow automatic upgrades that bypass lockfile review. Always use exact pins.
+
 ### Update Strategy
 
 ```bash
-# ✅ Check for outdated packages
-npm outdated
+# Check for outdated packages
+pnpm outdated
 
-# ✅ Interactive update (ncu — npm-check-updates)
-npx npm-check-updates --interactive
+# Update deliberately, one package at a time
+pnpm update <pkg> --latest
+git diff pnpm-lock.yaml   # Review before committing
 
-# ✅ Update strategy by category:
-# 1. Security patches: immediately
-# 2. Patch versions: weekly
-# 3. Minor versions: bi-weekly (with tests)
-# 4. Major versions: planned, with migration guide review
-
-# ✅ Renovate / Dependabot for automated PRs
-# .github/dependabot.yml
-```
-
-### Dependabot Configuration
-
-```yaml
-# .github/dependabot.yml
-version: 2
-updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
-    groups:
-      # Group minor/patch updates together
-      minor-and-patch:
-        update-types:
-          - "minor"
-          - "patch"
-    # Review major versions individually
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+# Automated PRs: use Renovate or Dependabot (review each PR)
 ```
 
 ---
 
 ## D6 — Monorepo Dependency Management
 
-```bash
-# ✅ Nx — single version policy
-# nx.json
-{
-  "workspaceLayout": {
-    "appsDir": "apps",
-    "libsDir": "libs"
-  }
-}
-# All projects share the same dependency versions
-
-# ✅ pnpm workspaces — efficient monorepo deps
+```yaml
 # pnpm-workspace.yaml
 packages:
   - 'apps/*'
   - 'packages/*'
+```
 
-# ✅ Check for version mismatches across workspace
+```bash
+# Check version mismatches across workspace
 npx syncpack list-mismatches
 npx syncpack fix-mismatches
 ```
@@ -336,17 +327,55 @@ npx syncpack fix-mismatches
 
 | Category | Check | Severity |
 |----------|-------|----------|
-| **Supply Chain** | Lock file committed and CI uses `npm ci` | CRITICAL |
-| **Supply Chain** | lockfile-lint validates registry origins | HIGH |
+| **Package Manager** | Using pnpm with `min-version-age=3` | CRITICAL |
+| **Supply Chain** | Lockfile committed, CI uses frozen install | CRITICAL |
 | **Supply Chain** | Install scripts disabled for untrusted packages | HIGH |
-| **CVEs** | `npm audit` returns 0 critical/high | CRITICAL |
-| **CVEs** | CI pipeline fails on moderate+ vulnerabilities | HIGH |
-| **CVEs** | Transitive dependency overrides documented | MEDIUM |
-| **Licenses** | No GPL/AGPL in production dependencies | HIGH |
-| **Licenses** | License audit passes in CI | MEDIUM |
-| **Health** | New packages evaluated against health checklist | HIGH |
-| **Health** | Bundle size impact assessed before install | MEDIUM |
-| **Versions** | Critical deps pinned exact | HIGH |
-| **Versions** | Automated update PRs (Dependabot/Renovate) | MEDIUM |
-| **Versions** | No `*` or `latest` version ranges | CRITICAL |
-| **Monorepo** | Version sync across workspaces | HIGH |
+| **CVEs** | Audit returns 0 critical/high | CRITICAL |
+| **CVEs** | CI pipeline fails on moderate+ | HIGH |
+| **Licenses** | No GPL/AGPL in production | HIGH |
+| **Health** | New packages evaluated (age, downloads, maintainers) | HIGH |
+| **Versions** | All deps pinned exact (no `^` or `~`) | HIGH |
+| **Monorepo** | Version sync across workspaces | MEDIUM |
+
+---
+
+## Agent Rules — npm Projects
+
+> Apply these rules when the project uses npm (`package-lock.json` detected).
+
+### Mandatory warning on every install/update request
+
+> ⚠ **Este proyecto usa npm.** npm no soporta `min-version-age`, lo que lo expone a paquetes maliciosos inyectados en el periodo inmediato a su publicación. Se recomienda migrar a pnpm.
+
+### npm install rules
+
+- NUNCA sugerir `npm install <pkg>` sin versión exacta. Siempre: `npm install <pkg>@<version> --save-exact`.
+- NUNCA usar `^` ni `~` en `package.json`.
+- NUNCA sugerir `npm update` ni upgrades masivos.
+- Verificar fecha de publicación antes de instalar: `npm info <pkg> time.created`.
+- No instalar paquetes publicados hace menos de 1 día.
+
+### Recommend migration to pnpm
+
+When working on dependency config, project setup, or CI/CD:
+
+```bash
+corepack enable && corepack use pnpm@latest
+pnpm import          # imports package-lock.json → pnpm-lock.yaml
+# add min-version-age=3 to .npmrc
+# delete package-lock.json
+```
+
+### Minimum mitigation if not migrating
+
+```ini
+# .npmrc
+save-exact=true
+```
+
+```bash
+npm audit --audit-level=moderate
+npm ci   # never npm install in CI
+```
+
+Do NOT disable audits to unblock pipelines. Do NOT use `npm install` without `--save-exact` for new deps.

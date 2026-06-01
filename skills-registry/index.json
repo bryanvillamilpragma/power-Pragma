@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-07T03:51:33.539Z",
+  "generatedAt": "2026-06-01T20:22:27.900Z",
   "reviewer": {
     "model": "gpt-5.4",
     "promptVersion": "1.0.0"
@@ -73,21 +73,29 @@
     "typescript-advanced-types": {
       "source": "wshobson/agents",
       "skillPath": "wshobson/agents/typescript-advanced-types",
-      "commitSha": "87b81e9d642d7bb9602b33d1e2dadf1c2a619f2b",
+      "commitSha": "0818067b4ecad18c234b2ae427cc44f2053792d4",
       "files": [
-        "SKILL.md"
+        "SKILL.md",
+        "references/details.md"
       ],
       "sha256": {
-        "SKILL.md": "c142f64de35a7c7518e62d4a5c5b18800bbe4391be14ba45a5d049adfcf01c57"
+        "SKILL.md": "c32101c65134d94ef1a3305ef486020b57be6408f97ed952c9c560e3fe04188d",
+        "references/details.md": "036a1dd41283384f086ac0eeb4f63c899b042ad68815a8ce00afebf606b55c44"
       },
-      "bundleHash": "5ca0e177c6aaaba1889255691224daafdb7d71f317cc70bede1590d3907ded42",
+      "bundleHash": "cb5d18bc19191b388cc49c15ff98dcbc714fa343373d078be00833e8a18ef291",
       "review": {
         "status": "approved",
         "flags": [],
         "summary": "review skipped (--no-review)",
         "model": "gpt-5.4",
         "promptVersion": "1.0.0",
-        "reviewedAt": "2026-04-17T16:31:21.774Z"
+        "reviewedAt": "2026-06-01T20:21:04.908Z"
+      },
+      "securityCheck": {
+        "status": "ok",
+        "findings": [],
+        "summary": "review skipped (--no-review)",
+        "checkedAt": "2026-06-01T20:21:04.908Z"
       }
     },
     "frontend-design": {
@@ -115,25 +123,31 @@
     "accessibility": {
       "source": "addyosmani/web-quality-skills",
       "skillPath": "addyosmani/web-quality-skills/accessibility",
-      "commitSha": "fed9617111260e19f4f54b72a2874a3f3de8ff94",
+      "commitSha": "7b59d48aaf1f793935002f4998dfccc656f40839",
       "files": [
         "SKILL.md",
         "references/A11Y-PATTERNS.md",
         "references/WCAG.md"
       ],
       "sha256": {
-        "SKILL.md": "65021e9ccab70165539db82070257d4e2e2c7d7b0f857825299da2e4a7a8704c",
+        "SKILL.md": "e7193cfa7082217ef89d9dd942c06e578774c0a52808703417e4d83fd3b3104c",
         "references/A11Y-PATTERNS.md": "f10e238dd4dd3c4f51134c2056bc02d3dd4f8fb6ccc9145c2c1ba7aab4d58140",
         "references/WCAG.md": "16683e025e3833d931c9d880645d98a448827f97e10189b6c8f12c832e7a2361"
       },
-      "bundleHash": "bffe3d08cfe92ebad63699f74ce29e35c19850ebfbf474c1463183cfe34d6a09",
+      "bundleHash": "b7784a2b90605bd79d1a0e9ef84983fcc0bf70f904da0ae554b846341470f6b0",
       "review": {
         "status": "approved",
         "flags": [],
         "summary": "review skipped (--no-review)",
         "model": "gpt-5.4",
         "promptVersion": "1.0.0",
-        "reviewedAt": "2026-04-17T22:44:47.529Z"
+        "reviewedAt": "2026-06-01T20:21:09.553Z"
+      },
+      "securityCheck": {
+        "status": "ok",
+        "findings": [],
+        "summary": "review skipped (--no-review)",
+        "checkedAt": "2026-06-01T20:21:09.553Z"
       }
     },
     "reference-core": {
@@ -212,7 +226,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -234,7 +248,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -248,13 +262,13 @@
         "SKILL.md"
       ],
       "sha256": {
-        "SKILL.md": "6e2fa9bb2807c61249ee47f396c3c77e056d52d05e7304347b808791a78cca10"
+        "SKILL.md": "cf98dd611f7fd334883780a383ba4fb86e86a5558f5747b7d0605516f76837f5"
       },
-      "bundleHash": "8e4001279b99902053002445aa88519e0ca5426b7d8355adde2c030f5b1c2522",
+      "bundleHash": "e453a20d00da24c7a49e4435f9f6512f456f68be0f3bbab8bdef61be6625cb97",
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -274,7 +288,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -294,7 +308,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -314,7 +328,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -334,7 +348,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -362,7 +376,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -382,7 +396,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -482,7 +496,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -506,7 +520,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -526,7 +540,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -562,7 +576,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -702,7 +716,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -722,7 +736,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Local skill \u2014 no remote review required.",
+        "summary": "Local skill — no remote review required.",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-05T16:38:04.437Z"
@@ -731,33 +745,33 @@
     "seo": {
       "source": "addyosmani/web-quality-skills",
       "skillPath": "addyosmani/web-quality-skills/seo",
-      "commitSha": "0b377cef290343ed3f652f66caa19927223d5451",
+      "commitSha": "7b59d48aaf1f793935002f4998dfccc656f40839",
       "files": [
         "SKILL.md"
       ],
       "sha256": {
-        "SKILL.md": "f3e546112a3168515486c533d13156a1d4dcd9402f3d116730cef573a20e2804"
+        "SKILL.md": "a06ca86d0b0cc75982ee10651bd7398c0242a13d91d3b4c8eae0bf1360d18b92"
       },
-      "bundleHash": "c184da724d1c61ad077f27418ea8e7e88fd54bcdf98165e18be7e4681cbd5e20",
+      "bundleHash": "c08a9b801f9a0c0ec5c2c9ccdf9730917dd05da9850085f489855ed4d0a2bcfc",
       "review": {
         "status": "approved",
         "flags": [],
         "summary": "review skipped (--no-review)",
         "model": "gpt-5.4",
         "promptVersion": "1.0.0",
-        "reviewedAt": "2026-05-06T03:30:08.798Z"
+        "reviewedAt": "2026-06-01T20:21:09.562Z"
       },
       "securityCheck": {
         "status": "ok",
         "findings": [],
         "summary": "review skipped (--no-review)",
-        "checkedAt": "2026-05-06T03:30:08.798Z"
+        "checkedAt": "2026-06-01T20:21:09.562Z"
       }
     },
     "angular-developer": {
       "source": "angular/skills",
       "skillPath": "angular/skills/angular-developer",
-      "commitSha": "666af8fcc9f8f732ae56d09ad39cdbdfa87d1db4",
+      "commitSha": "c956a7118c7bbfbbf76281f634574a7ff68dcbd7",
       "files": [
         "SKILL.md",
         "references/angular-animations.md",
@@ -800,12 +814,12 @@
       "sha256": {
         "SKILL.md": "faf49f2c11fb19085ff4cdfc985adc8bf27e888b122e309da6fb00b17b7b1e5b",
         "references/angular-animations.md": "0361278cabc4925807c8a93ebce717f1c8d52d553870ddd8634b1075b0395dbc",
-        "references/angular-aria.md": "258262515f0b9f11df3a291c80e6326432b14d3f67109a6ff1592f4c5761a98d",
-        "references/cli.md": "b7a5f9f85125659966fe087b623939fe2b89ea5d7cdf53265476adf1666e37d9",
+        "references/angular-aria.md": "5f9cc5d323034c1fe3a3290031ffa95634e721e33725c5a8a88b68d8d50d8328",
+        "references/cli.md": "39468f1be907a1abff746e79cb9fabd9675956df00c87d9b8bd1517855b9fd7d",
         "references/component-harnesses.md": "6b4f4958684308e76b4c57fb4b5f7efdf1cfc64001dd671fe40ae1ceab8e0943",
         "references/component-styling.md": "de3351fdb72174361c6eee150940193f20d148afaceab0f22107758a3cb2d787",
         "references/components.md": "dbfb520f2dddd017acb617369c45544374440fcb0b178d9648fab7ada0178468",
-        "references/creating-services.md": "9b0d8b6d627ec33e5957638049877eac655cd31444cd4afa440597e191e4cb94",
+        "references/creating-services.md": "6e4353c2263a31ad3edcefc6c33fcb0e328b9d0421b124ba121feae84972701e",
         "references/data-resolvers.md": "0a6eb7ee89b29d1766941ed88881803b32870e705f2e438a7cae1c4e59ed8289",
         "references/define-routes.md": "1288b38bad6cc9749e9d0fd35a294771ea2181dd712bfc2887d80e8b40fab7e6",
         "references/defining-providers.md": "e654c23a080c642cf7031b5cc5de1101b8c75030c15256f7e3b81b0336953c6d",
@@ -814,7 +828,7 @@
         "references/effects.md": "c06ad02460be7f57d024bb8e263a3390e72059815879bf6bcd0583e510a2b4ad",
         "references/hierarchical-injectors.md": "05546d8043b93a2ab8deccdc2bd9c1704350883107701139e790ff8adb0f626a",
         "references/host-elements.md": "b898bab74d518feba3c527dbf9694abe6d3ec7bfa44d81b34cff119016984080",
-        "references/injection-context.md": "bd0b1dad833696bf2aef2413426d445222aa29cd1cf5608c89147272ca34d9bb",
+        "references/injection-context.md": "4435dfcec91bd9fb68d6c318802cac1b37424d4e76452e6f0f52ed0d2b6536fb",
         "references/inputs.md": "229a6e37f7006a6f3426cc2bc42baa67ecbbab77c343d141e44b10c1bb11de09",
         "references/linked-signal.md": "4971692a36c4d470b5c8efec1a8106418ac28cdc33601e554ecff9dded95d289",
         "references/loading-strategies.md": "fa82c48573532a7f5e3ccf7eaa50dc7a2db1f23a8599638d9c18e023dbd73e2f",
@@ -824,7 +838,7 @@
         "references/outputs.md": "a191f8982d9ac6868023d56c887f362052c4fccc70a89adc8a6bc546f851e5dc",
         "references/reactive-forms.md": "e71118562247c94141dfaca74efd246e38226bf26ffedbd7f3337f1866113283",
         "references/rendering-strategies.md": "329aa9aa35c85dd2048c899f26025439d3b0244067dbb508e724d291fdad7c97",
-        "references/resource.md": "ff03e5f21219cb0cb6e8ea9fe3c47ead2308471a15a925cbcaf051473669c40c",
+        "references/resource.md": "c7a9f7f550e4187b853ea847c0666a33bb4227454b4acab8ba2f2ecce5ca8fed",
         "references/route-animations.md": "eda1452f85ce05f3f28753cc77cd8c31c7a52515d7ccebbb35de0ec1e3beb374",
         "references/route-guards.md": "491a93cb49fbcba04f7e8ffcd0f784fce7319ca3e2fe393c553f3d683a68424c",
         "references/router-lifecycle.md": "4abc8cb8dfeb2e9f57dc11c117d5f4a5b756b39dc076910d9ced9da640effc2d",
@@ -836,20 +850,20 @@
         "references/template-driven-forms.md": "52e83e576b0c6dc05f854e903c4cfda1222bcd55c50ddee07344d1e53d02c1df",
         "references/testing-fundamentals.md": "c19aba15bd188bb6570fb593e0ca06d52ab86b9ef071611ad89aef1fbdd1a45e"
       },
-      "bundleHash": "fc045be84cd51d105e4523a555510e3fd465a3e931f9b0049b0dfbdf68775eac",
+      "bundleHash": "d9bb35bda772cc8c029971f8207e9cd927c823bd85e783a02e33f6f54b51113d",
       "review": {
         "status": "approved",
         "flags": [],
         "summary": "review skipped (--no-review)",
         "model": "gpt-5.4",
         "promptVersion": "1.0.0",
-        "reviewedAt": "2026-05-06T03:34:00.676Z"
+        "reviewedAt": "2026-06-01T20:20:55.380Z"
       },
       "securityCheck": {
         "status": "ok",
         "findings": [],
         "summary": "review skipped (--no-review)",
-        "checkedAt": "2026-05-06T03:34:00.676Z"
+        "checkedAt": "2026-06-01T20:20:55.380Z"
       }
     },
     "adev-writing-guide": {
@@ -955,7 +969,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Reglas SOLID y Clean Code para generaci\u00f3n de c\u00f3digo",
+        "summary": "Reglas SOLID y Clean Code para generación de código",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-06T00:00:00.000Z"
@@ -1039,7 +1053,7 @@
       "review": {
         "status": "approved",
         "flags": [],
-        "summary": "Reglas de dise\u00f1o responsive: mobile-first, breakpoints, Figma workflow",
+        "summary": "Reglas de diseño responsive: mobile-first, breakpoints, Figma workflow",
         "model": "local",
         "promptVersion": "1.0.0",
         "reviewedAt": "2026-05-15T00:00:00.000Z"
@@ -1185,6 +1199,26 @@
       },
       "bundleHash": "e10ff93337c271d2e8f531820956b2857eef5ba82fdde1cec74f2b7c7214182f",
       "skillPath": "sopp-front/skills/workflows/figma-to-code"
+    },
+    "pnpm-setup": {
+      "source": "sopp-front/skills",
+      "skillPath": "sopp-front/skills/pnpm-setup",
+      "commitSha": "local",
+      "files": [
+        "SKILL.md"
+      ],
+      "sha256": {
+        "SKILL.md": "c2361cf602f41f2a8361721246f7ad5a31c16f761772e639c0f168d2e035ac87"
+      },
+      "bundleHash": "328e8627f7faff16cfd17bbe2c33598f29bcd6718bd9becbccbbf899b327ca08",
+      "review": {
+        "status": "approved",
+        "flags": [],
+        "summary": "Guía de setup pnpm para proyectos sin lockfile. Configuración inicial, .npmrc y CI.",
+        "model": "local",
+        "promptVersion": "1.0.0",
+        "reviewedAt": "2026-05-29T00:00:00.000Z"
+      }
     }
   }
 }
