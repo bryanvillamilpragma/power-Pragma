@@ -473,8 +473,26 @@ export function writeArtifactForIDE(
     const srcFile = join(canonicalDir, "SKILL.md");
     const destFile = join(installBase, artifactConfig.fileExt);
     if (existsSync(srcFile)) {
-      const content = readFileSync(srcFile, "utf-8");
-      appendFileSync(destFile, `\n\n<!-- ${artifactName} -->\n` + content, "utf-8");
+      const raw = readFileSync(srcFile, "utf-8");
+      const content = raw.trim()
+      const startMarker = `<!-- ${artifactName} -->`;
+      const endMarker = `<!-- /${artifactName} -->`;
+      const block = `\n\n${startMarker}\n${content}\n${endMarker}`;
+      if (existsSync(destFile)) {
+        const existing = readFileSync(destFile, "utf-8");
+        const escapedName = artifactName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const blockPattern = new RegExp(
+          `\\n*<!-- ${escapedName} -->[\\s\\S]*?<!-- \\/${escapedName} -->`,
+          "g",
+        );
+        if (blockPattern.test(existing)) {
+          writeFileSync(destFile, existing.replace(blockPattern, block), "utf-8");
+        } else {
+          appendFileSync(destFile, block, "utf-8");
+        }
+      } else {
+        writeFileSync(destFile, block, "utf-8");
+      }
     }
     return destFile;
   } else {
