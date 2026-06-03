@@ -62,6 +62,7 @@ export const SKILLS_MAP: Technology[] = [
       "sopp-front/skills/rules/performance",
       "sopp-front/skills/rules/security",
       "sopp-front/skills/rules/responsive-design",
+      "sopp-front/skills/rules/git-commit",
     ],
   },
   {
@@ -90,6 +91,7 @@ export const SKILLS_MAP: Technology[] = [
       "sopp-front/skills/rules/performance",
       "sopp-front/skills/rules/security",
       "sopp-front/skills/rules/responsive-design",
+      "sopp-front/skills/rules/git-commit",
     ],
   },
   {
@@ -123,6 +125,7 @@ export const SKILLS_MAP: Technology[] = [
       "sopp-front/skills/rules/code-test",
       "sopp-front/skills/rules/security",
       "sopp-front/skills/rules/responsive-design",
+      "sopp-front/skills/rules/git-commit",
     ],
   },
   {
@@ -138,6 +141,7 @@ export const SKILLS_MAP: Technology[] = [
     ],
     autoRules: [
       "sopp-front/skills/rules/responsive-design",
+      "sopp-front/skills/rules/git-commit",
     ],
   },
   {
@@ -153,6 +157,7 @@ export const SKILLS_MAP: Technology[] = [
     ],
     autoRules: [
       "sopp-front/skills/rules/solid-clean",
+      "sopp-front/skills/rules/git-commit",
     ],
   },
   {
