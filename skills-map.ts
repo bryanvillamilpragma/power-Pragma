@@ -247,7 +247,7 @@ export const IDE_MAP: Record<string, IDEConfig> = {
     artifacts: {
       skill:  { folder: ".kiro/skills",  format: "dir",  fileExt: ""    },
       agent:  { folder: ".kiro/agents",  format: "file", fileExt: ".md" },
-      rule:   { folder: ".kiro/rules",   format: "file", fileExt: ".md" },
+      rule:   { folder: ".kiro/steering",   format: "file", fileExt: ".md" },
       prompt: { folder: ".kiro/prompts", format: "file", fileExt: ".md" },
     },
   },
@@ -267,7 +267,7 @@ export const IDE_MAP: Record<string, IDEConfig> = {
     artifacts: {
       skill:  { folder: ".agents/skills",                      format: "dir",  fileExt: ""    },
       agent:  { folder: ".codeium/windsurf/global_workflows",  format: "file", fileExt: ".md" },
-      rule:   { folder: ".codeium/windsurf/rules",             format: "file", fileExt: ".md" },
+      rule:   { folder: ".codeium/windsurf/rules",             format: "file", fileExt: ".md" }, // No las reconoce a nivel global, solo a nivel proyecto
       prompt: { folder: ".codeium/windsurf/prompts",           format: "file", fileExt: ".md" },
     },
   },
@@ -277,7 +277,7 @@ export const IDE_MAP: Record<string, IDEConfig> = {
     artifacts: {
       skill:  { folder: ".agents/skills",  format: "dir",  fileExt: ""     },
       agent:  { folder: ".agents/agents",  format: "file", fileExt: ".md"  },
-      rule:   { folder: ".cursor/rules",   format: "file", fileExt: ".mdc" },
+      rule:   { folder: ".cursor/rules",   format: "file", fileExt: ".mdc" }, // No las reconoce a nivel global, solo a nivel proyecto
       prompt: { folder: ".cursor/prompts", format: "file", fileExt: ".md"  },
     },
   },
