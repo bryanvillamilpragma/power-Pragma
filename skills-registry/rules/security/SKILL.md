@@ -3,6 +3,7 @@ name: security
 description: Reglas de seguridad frontend. XSS, tokens, headers, dependencias. Activar siempre que se genere código frontend.
 trigger: always_on
 type: rule
+inclusion: always
 ---
 
 Cuando generes o modifiques código frontend, aplica estas reglas de seguridad:

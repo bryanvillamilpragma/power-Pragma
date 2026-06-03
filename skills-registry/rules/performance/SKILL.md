@@ -3,6 +3,7 @@ name: performance
 description: Reglas de performance frontend. Core Web Vitals, bundle size, rendering. Activar siempre que se genere código frontend.
 trigger: always_on
 type: rule
+inclusion: always
 ---
 
 Cuando generes o modifiques código frontend, aplica estas reglas de rendimiento:

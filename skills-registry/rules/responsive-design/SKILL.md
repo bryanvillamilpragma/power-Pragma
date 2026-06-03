@@ -3,6 +3,7 @@ name: responsive-design
 description: Reglas de diseño responsive. Mobile, tablet y desktop. Activar siempre que se genere o modifique UI. Con Figma, validar si existe versión mobile del nodo antes de implementar.
 trigger: always_on
 type: rule
+inclusion: always
 ---
 Cuando generes o modifiques cualquier componente o vista de UI, aplica estas reglas de diseño responsive:
 

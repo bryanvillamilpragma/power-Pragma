@@ -3,6 +3,7 @@ name: clean-architecture
 description: Reglas para desarrollo con Clean Architecture. Activar cuando el proyecto use capas domain/application/infrastructure/presentation.
 trigger: always_on
 type: rule
+inclusion: always
 ---
 
 Cada vez que te pida realizar una arquitectura limpia debes seguir estas reglas:

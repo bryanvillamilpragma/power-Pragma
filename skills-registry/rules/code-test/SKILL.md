@@ -3,6 +3,8 @@ name: code-test
 description: Reglas para pruebas unitarias frontend con Jest, Vitest y Karma. Activar siempre que se genere o modifique código de tests.
 trigger: always_on
 type: rule
+inclusion: fileMatch
+fileMatchPattern: "**/*.{test,spec}.{ts,tsx,js,jsx}"
 ---
 
 Cada vez que te pida realizar pruebas unitarias debes seguir estas reglas:

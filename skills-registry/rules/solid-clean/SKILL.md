@@ -3,6 +3,7 @@ name: solid-clean
 description: Reglas SOLID y Clean Code para generación de código. Activar siempre que se genere o modifique código.
 trigger: always_on
 type: rule
+inclusion: always
 ---
 
 Cuando te pida generar código debes seguir estas reglas:
