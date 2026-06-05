@@ -196,6 +196,7 @@ export const FRONTEND_BONUS_SKILLS: string[] = [
   "sopp-front/skills/eslint-prettier-config",
   "sopp-front/skills/superdesign",
   "sopp-front/skills/dependency-management",
+  "sopp-front/skills/pnpm-setup"
 ];
 
 // ── Agent Folder Map ─────────────────────────────────────────
