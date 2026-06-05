@@ -55,6 +55,7 @@ export const SKILLS_MAP: Technology[] = [
       "sopp-front/skills/workflows/security-auditor",
       "sopp-front/skills/workflows/microfrontend-architect",
       "sopp-front/skills/workflows/figma-to-code",
+      "sopp-front/skills/workflows/playwright-e2e-audit",
     ],
     autoRules: [
       "sopp-front/skills/rules/solid-clean",
@@ -83,6 +84,7 @@ export const SKILLS_MAP: Technology[] = [
       "sopp-front/skills/workflows/security-auditor",
       "sopp-front/skills/workflows/microfrontend-architect",
       "sopp-front/skills/workflows/figma-to-code",
+      "sopp-front/skills/workflows/playwright-e2e-audit",
     ],
     autoRules: [
       "sopp-front/skills/rules/solid-clean",
@@ -116,6 +118,7 @@ export const SKILLS_MAP: Technology[] = [
       "sopp-front/skills/workflows/security-auditor",
       "sopp-front/skills/workflows/microfrontend-architect",
       "sopp-front/skills/workflows/figma-to-code",
+      "sopp-front/skills/workflows/playwright-e2e-audit",
     ],
     autoRules: [
       "sopp-front/skills/rules/clean-architecture",
