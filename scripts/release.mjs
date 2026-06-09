@@ -363,12 +363,15 @@ try {
 
   // 9. Publish to npm
   console.log("\n🚀 Publicando en npm...");
+  // pnpm v10 injected npm_config_* into script env; pnpm v11 uses pnpm_config_* instead.
+  // Strip both so they don't interfere with `npm publish`, but keep auth/registry entries.
   const cleanEnv = Object.fromEntries(
     Object.entries(process.env).filter(
       ([k]) =>
-        !k.startsWith("npm_config_") ||
-        k === "npm_config_registry" ||
-        k.startsWith("npm_config_//"),
+        (!k.startsWith("npm_config_") ||
+          k === "npm_config_registry" ||
+          k.startsWith("npm_config_//")) &&
+        !k.startsWith("pnpm_config_"),
     ),
   );
   execSync("npm publish --access public", {
